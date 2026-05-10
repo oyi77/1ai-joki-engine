@@ -1,0 +1,161 @@
+import { Router } from 'express'
+import { JobQueue } from '../queue/job-queue'
+import {
+  createSchedule,
+  listSchedules,
+  updateSchedule,
+  validateCronExpression,
+} from '../scheduler/cron-scheduler'
+import { JobsRepo } from '../repos/jobsRepo'
+import { AccountsRepo, Account } from '../repos/accountsRepo'
+import { getRandomTargets } from '../utils/randomTargets'
+import type { DB } from '../db/sqlite'
+import type { PostJob, CommentJob } from '../types/jobs'
+
+// Do not initialize DB during import. Provide lazy access to JobsRepo so tests
+// and setup code can initialize DB first.
+let jobsRepo: JobsRepo | null = null
+export function getJobsRepo(db?: DB) {
+  if (jobsRepo) return jobsRepo
+  jobsRepo = new JobsRepo(db)
+  return jobsRepo
+}
+
+export type QueueLike = Pick<JobQueue, 'enqueuePostJob' | 'enqueueCommentJob' | 'enqueueChatJob' | 'enqueueReplyJob'>
+
+export function createJobsRouter(queue: QueueLike) {
+  const router = Router()
+
+  router.post('/schedule', (req, res) => {
+    const { cron, template_id, account_id, to, platform : _to, platform } = req.body // eslint-disable-line @typescript-eslint/no-unused-vars || {}
+    if (!cron || !template_id || !account_id) {
+      return res.status(400).json({ error: 'Missing required fields' })
+    }
+    if (!validateCronExpression(cron)) {
+      return res.status(400).json({ error: 'Invalid cron expression' })
+    }
+    const schedule = createSchedule({ cron, template_id, account_id, platform })
+    res.status(201).json(schedule)
+  })
+
+  router.post('/trigger', async (req, res) => {
+    const { template_id, account_id, to, platform, message } = req.body || {}
+    if (!template_id || !account_id) {
+      return res.status(400).json({ error: 'Missing required fields' })
+    }
+    const repo = getJobsRepo()
+    const recipient = to || account_id
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const job = repo.create({
+      account_id,
+      platform: platform || 'default',
+      type: 'post',
+      payload: { template_id, message, to: recipient },
+    })
+    const jobId = await queue.enqueuePostJob({
+      platform: platform || 'default',
+      to: recipient,
+      message: message || `Trigger template ${template_id}`,
+    } as unknown as Omit<PostJob, 'id' | 'type'> & { platform: string })
+    res.status(202).json({ job_id: jobId })
+  })
+
+  /**
+   * POST /v1/jobs/comment-random
+   * Body: { message: string, accountId: string, count?: number }
+   *
+   * Reads data/targets.txt (post IDs), picks `count` random targets (default 50),
+   * enqueues a CommentJob for each, and returns the array of job IDs.
+   *
+   * The account must be a Facebook account (platform = 'facebook' or 'facebook-page').
+   */
+  router.post('/comment-random', async (req, res) => {
+    const { message, accountId, count } = req.body || {}
+
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return res.status(400).json({ error: 'message is required' })
+    }
+    if (!accountId || typeof accountId !== 'string') {
+      return res.status(400).json({ error: 'accountId is required' })
+    }
+
+     // Validate account exists and is Facebook
+     let account: Account | null = null
+     try {
+       const accountsRepo = new AccountsRepo()
+       account = accountsRepo.findById(accountId)
+     } catch {
+       return res.status(500).json({ error: 'Failed to look up account' })
+     }
+
+    if (!account) {
+      return res.status(404).json({ error: `Account not found: ${accountId}` })
+    }
+    const platformValue: string = String(account.platform ?? '')
+    if (!platformValue.startsWith('facebook')) {
+      return res.status(400).json({
+        error: `Account platform must be 'facebook' or 'facebook-page', got: ${platformValue}`,
+      })
+    }
+
+    // Load random targets
+    const targetCount = typeof count === 'number' && count > 0 ? Math.min(count, 200) : 50
+    const targets = getRandomTargets(targetCount)
+
+    if (targets.length === 0) {
+      return res.status(422).json({
+        error:
+          'No targets available. Fill data/targets.txt with post IDs (one per line) and try again.',
+      })
+    }
+
+    // Enqueue one CommentJob per target
+    const jobIds: string[] = []
+    const errors: string[] = []
+
+    for (const postId of targets) {
+       try {
+         const jobId = await queue.enqueueCommentJob({
+           platform: 'facebook',
+           postId,
+           message: message.trim(),
+           account_id: accountId,
+         } as unknown as Omit<CommentJob, 'id' | 'type'> & { platform: string })
+         jobIds.push(jobId)
+       } catch (e: unknown) {
+         const errorMsg = e instanceof Error ? e.message : String(e)
+         errors.push(`Failed to enqueue for postId=${postId}: ${errorMsg}`)
+       }
+    }
+
+    return res.status(202).json({
+      enqueued: jobIds.length,
+      job_ids: jobIds,
+      targets_found: targets.length,
+      errors: errors.length > 0 ? errors : undefined,
+    })
+  })
+
+  return router
+}
+
+export function createSchedulesRouter() {
+  const router = Router()
+  router.get('/', (_req, res) => {
+    res.json(listSchedules())
+  })
+  router.put('/:id', (req, res) => {
+    const updated = updateSchedule(req.params.id, req.body || {})
+    if (!updated) {
+      return res.status(404).json({ error: 'Schedule not found' })
+    }
+    res.json(updated)
+  })
+  return router
+}
+
+export const defaultJobQueue = new JobQueue()
+export const jobsRouter = createJobsRouter(defaultJobQueue)
+export const schedulesRouter = createSchedulesRouter()
+export { resetSchedules, startCronScheduler, schedules } from '../scheduler/cron-scheduler'
+export default jobsRouter

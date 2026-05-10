@@ -110,7 +110,8 @@ export async function sendPrivateMessage(
       return { success: false, error: 'Auth expired — login redirect in GraphQL response' }
     }
 
-    let parsed: any = {}
+    type ParsedResponse = { errors?: { message?: string }[]; data?: { messenger_send_message?: { message?: { message_id?: string } }; messageSend?: { message?: { id?: string } } } }
+    let parsed: ParsedResponse = {}
     try {
       parsed = typeof res?.data === 'object' ? res.data : JSON.parse(responseText)
     } catch {
@@ -122,8 +123,10 @@ export async function sendPrivateMessage(
     }
 
     // Check GraphQL errors
-    if (parsed?.errors?.length > 0) {
-      const errMsg = parsed.errors[0]?.message ?? JSON.stringify(parsed.errors[0])
+    const errorArray = Array.isArray(parsed?.errors) ? parsed.errors : []
+    if (errorArray.length > 0) {
+      const firstError = errorArray[0]
+      const errMsg = firstError?.message ?? JSON.stringify(firstError)
       return { success: false, error: `GraphQL error: ${errMsg}` }
     }
 
@@ -139,10 +142,11 @@ export async function sendPrivateMessage(
       messageId,
       error: ok ? undefined : `Message not confirmed. Response: ${responseText.slice(0, 300)}`,
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e : new Error(String(e))
     return {
       success: false,
-      error: e?.message ?? 'sendPrivateMessage error',
+      error: error.message ?? 'sendPrivateMessage error',
     }
   }
 }

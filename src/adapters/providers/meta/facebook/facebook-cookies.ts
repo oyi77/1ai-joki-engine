@@ -79,16 +79,17 @@ export class FacebookCookieAdapter implements IAdapter {
         '/api/v1/media/configure_text_post_app_feed/',
         params.toString()
       )
-      const ok = res?.data?.status === 'ok' || res?.status === 200
-      this.log(`Post result: ${res?.data?.status}`)
-      return { success: ok, code: ok ? undefined : 'FACEBOOK_COOKIE_POST_ERROR' }
-    } catch (e: any) {
-      return {
-        success: false,
-        error: e?.message ?? 'Facebook cookie post error',
-        code: 'FACEBOOK_COOKIE_POST_ERROR',
-      }
-    }
+       const ok = res?.data?.status === 'ok' || res?.status === 200
+       this.log(`Post result: ${res?.data?.status}`)
+       return { success: ok, code: ok ? undefined : 'FACEBOOK_COOKIE_POST_ERROR' }
+     } catch (e: unknown) {
+       const errorMessage = e instanceof Error ? e.message : String(e)
+       return {
+         success: false,
+         error: errorMessage,
+         code: 'FACEBOOK_COOKIE_POST_ERROR',
+       }
+     }
   }
 
   /**

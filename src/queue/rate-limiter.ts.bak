@@ -124,7 +124,7 @@ export class RateLimiter {
 
   private getBreaker(platform: string): CircuitBreaker {
     if (!this.breakers.has(platform)) {
-      const quota = PLATFORM_QUOTAS[platform] || PLATFORM_QUOTAS.default; // eslint-disable-line @typescript-eslint/no-unused-vars
+      const quota = PLATFORM_QUOTAS[platform] || PLATFORM_QUOTAS.default;
       this.breakers.set(platform, {
         state: CircuitState.CLOSED,
         failures: 0

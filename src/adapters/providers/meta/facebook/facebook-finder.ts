@@ -81,14 +81,15 @@ export async function findFacebookTargets(
       return fallbackToFile(limit)
     }
 
-    return {
-      postIds: postIds.slice(0, limit),
-      userIds: userIds.slice(0, limit),
-    }
-  } catch (e: any) {
-    console.error('[FacebookFinder] Search error:', e?.message)
-    return fallbackToFile(limit)
-  }
+     return {
+       postIds: postIds.slice(0, limit),
+       userIds: userIds.slice(0, limit),
+     }
+   } catch (e: unknown) {
+     const error = e instanceof Error ? e : new Error(String(e))
+     console.error('[FacebookFinder] Search error:', error.message)
+     return fallbackToFile(limit)
+   }
 }
 
 /**

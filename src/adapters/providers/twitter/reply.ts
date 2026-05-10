@@ -59,7 +59,7 @@ export async function replyToTweet(
     const res = await client.post('/i/api/graphql/SoVnbfCycZ7fERGCwpZkYA/CreateTweet', body)
     const resultTweetId = res?.data?.data?.create_tweet?.tweet_results?.result?.rest_id
     return { success: !!resultTweetId, error: resultTweetId ? undefined : 'Reply failed' }
-  } catch (e: any) {
-    return { success: false, error: e?.message ?? 'Twitter reply error' }
+  } catch (e: unknown) {
+    return { success: false, error: e instanceof Error ? e.message : 'Twitter reply error' }
   }
 }

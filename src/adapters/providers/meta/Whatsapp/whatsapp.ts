@@ -10,6 +10,20 @@ export interface WhatsAppAdapterOptions {
 
 type SendResult = { success: boolean; error?: string; code?: string };
 
+// WhatsApp API response types
+interface WAHAChat {
+  id?: string;
+  name?: string;
+  message?: string;
+  timestamp?: number;
+}
+
+interface WAHAContact {
+  id?: string;
+  name?: string;
+  number?: string;
+}
+
 export class WhatsAppAdapter implements IAdapter {
   private baseUrl: string;
   private apiKey: string;
@@ -76,7 +90,7 @@ export class WhatsAppAdapter implements IAdapter {
         'Content-Type': 'application/json',
         'X-WAHA-API-KEY': this.apiKey
       },
-      body: JSON.stringify({ session: this.session, chatId: to, text: message })
+      body: JSON.stringify({ session: this.session, chatId: to, message })
     });
 
     if (!res.ok) {
@@ -87,57 +101,6 @@ export class WhatsAppAdapter implements IAdapter {
 
     this.log('Message sent successfully.');
     return { success: true };
-  }
-
-  async disconnect(): Promise<void> {
-    const url = `${this.baseUrl}/api/sessions/${this.session}/logout`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'X-WAHA-API-KEY': this.apiKey }
-    });
-    if (res.ok) {
-      this.log('Session logged out successfully.');
-    } else {
-      this.log(`Failed to disconnect session: ${res.statusText}`);
-    }
-  }
-
-  async getRateLimitStatus(): Promise<RateLimitStatus | null> {
-    const now = Date.now()
-    if (now > this.rateReset) {
-      this.rateRemaining = this.rateLimit
-      this.rateReset = now + 60_000
-    }
-    return {
-      limit: this.rateLimit,
-      remaining: this.rateRemaining,
-      reset: this.rateReset,
-    }
-  }
-
-  async checkSession(): Promise<{ status: string; name: string } | null> {
-    const url = `${this.baseUrl}/api/sessions/${this.session}`;
-    const res = await fetch(url, {
-      headers: { 'X-WAHA-API-KEY': this.apiKey }
-    });
-    if (res.ok) {
-      const data = await res.json() as { status: string; name: string };
-      return data;
-    }
-    return null;
-  }
-
-  async getChats(limit?: number): Promise<any[]> {
-    const url = `${this.baseUrl}/api/chats?session=${this.session}&limit=${limit || 50}`;
-    const res = await fetch(url, {
-      headers: { 'X-WAHA-API-KEY': this.apiKey }
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch chats: ${res.statusText}`);
-    }
-    const data = await res.json() as any[];
-    return data;
   }
 
   async sendImage(to: string, imageUrl: string, caption?: string): Promise<SendResult> {
@@ -161,7 +124,114 @@ export class WhatsAppAdapter implements IAdapter {
     return { success: true };
   }
 
-  async onMessage(callback: (msg: any) => void): Promise<void> {
+  async sendVideo(to: string, videoUrl: string, caption?: string): Promise<SendResult> {
+    const url = `${this.baseUrl}/api/sendVideo`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-WAHA-API-KEY': this.apiKey
+      },
+      body: JSON.stringify({ session: this.session, chatId: to, file: { url: videoUrl }, caption })
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      this.log(`Failed to send video: ${error}`);
+      return { success: false, error, code: res.status.toString() };
+    }
+
+    this.log('Video sent successfully.');
+    return { success: true };
+  }
+
+  async sendDocument(to: string, documentUrl: string, caption?: string, fileName?: string): Promise<SendResult> {
+    const url = `${this.baseUrl}/api/sendDocument`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-WAHA-API-KEY': this.apiKey
+      },
+      body: JSON.stringify({ 
+        session: this.session, 
+        chatId: to, 
+        file: { url: documentUrl },
+        caption,
+        fileName
+      })
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      this.log(`Failed to send document: ${error}`);
+      return { success: false, error, code: res.status.toString() };
+    }
+
+    this.log('Document sent successfully.');
+    return { success: true };
+  }
+
+  async sendAudio(to: string, audioUrl: string): Promise<SendResult> {
+    const url = `${this.baseUrl}/api/sendAudio`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-WAHA-API-KEY': this.apiKey
+      },
+      body: JSON.stringify({ session: this.session, chatId: to, file: { url: audioUrl } })
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      this.log(`Failed to send audio: ${error}`);
+      return { success: false, error, code: res.status.toString() };
+    }
+
+    this.log('Audio sent successfully.');
+    return { success: true };
+  }
+
+  async getContacts(): Promise<WAHAContact[]> {
+    const url = `${this.baseUrl}/api/contacts?session=${this.session}`;
+    const res = await fetch(url, {
+      headers: { 'X-WAHA-API-KEY': this.apiKey }
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch contacts: ${res.statusText}`);
+    }
+    const data: WAHAContact[] = await res.json();
+    return data;
+  }
+
+  async getChats(limit?: number): Promise<WAHAChat[]> {
+    const url = `${this.baseUrl}/api/chats?session=${this.session}&limit=${limit || 50}`;
+    const res = await fetch(url, {
+      headers: { 'X-WAHA-API-KEY': this.apiKey }
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch chats: ${res.statusText}`);
+    }
+    const data: WAHAChat[] = await res.json();
+    return data;
+  }
+
+  async getStatus(): Promise<null | { status: string; name: string }> {
+    const url = `${this.baseUrl}/api/status/${this.session}`;
+    const res = await fetch(url, {
+      headers: { 'X-WAHA-API-KEY': this.apiKey }
+    });
+    if (res.ok) {
+      const data = await res.json() as { status: string; name: string };
+      return data;
+    }
+    return null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+  async onMessage(_callback: (msg: any) => void): Promise<void> {
     const callbackUrl = 'YOUR_WEBHOOK_URL';
     const url = `${this.baseUrl}/api/sessions/${this.session}/webhook`;
 
@@ -177,7 +247,20 @@ export class WhatsAppAdapter implements IAdapter {
     if (res.ok) {
       this.log('Webhook registered successfully.');
     } else {
-      this.log(`Failed to register webhook: ${res.statusText}`);
+      const error = await res.text();
+      this.log(`Failed to register webhook: ${error}`);
     }
+  }
+
+  async disconnect(): Promise<void> {
+    this.log('Disconnecting from WhatsApp...');
+  }
+
+  async getRateLimitStatus(): Promise<RateLimitStatus | null> {
+    return {
+      limit: this.rateLimit,
+      remaining: this.rateRemaining,
+      reset: this.rateReset
+    };
   }
 }

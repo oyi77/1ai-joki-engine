@@ -191,7 +191,8 @@ export class FacebookAdapter implements IAdapter {
       }
 
       // Parse JSON response
-      let parsed: any = {}
+      type ParsedResponse = { errors?: { message?: string }[]; data?: unknown; [key: string]: unknown }
+      let parsed: ParsedResponse = {}
       try {
         parsed = typeof res?.data === 'object' ? res.data : JSON.parse(responseText)
       } catch {
@@ -206,8 +207,9 @@ export class FacebookAdapter implements IAdapter {
       }
 
       // Check for errors in GraphQL response
-      if (parsed?.errors?.length > 0) {
-        const firstError = parsed.errors[0]
+      const errorArray = Array.isArray(parsed?.errors) ? parsed.errors : []
+      if (errorArray.length > 0) {
+        const firstError = errorArray[0]
         const errMsg = firstError?.message ?? JSON.stringify(firstError)
         this.log(`GraphQL error: ${errMsg}`)
         return { success: false, code: 'FB_GRAPHQL_ERROR', error: errMsg }
@@ -224,11 +226,12 @@ export class FacebookAdapter implements IAdapter {
         code: ok ? undefined : 'FB_POST_FAILED',
         error: ok ? undefined : `Post not confirmed. Response: ${responseText.slice(0, 300)}`,
       }
-    } catch (e: any) {
-      if (e?.name === 'AuthError') {
-        return { success: false, code: 'AUTH_EXPIRED', error: e.message }
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error(String(e))
+      if (error.name === 'AuthError') {
+        return { success: false, code: 'AUTH_EXPIRED', error: error.message }
       }
-      const errMsg = e?.message ?? 'Unknown error'
+      const errMsg = error.message ?? 'Unknown error'
       this.log(`sendMessage error: ${errMsg}`)
       return { success: false, code: 'FB_POST_ERROR', error: errMsg }
     }

@@ -69,10 +69,10 @@ export async function sendTwitterDM(
       success: ok,
       error: ok ? undefined : `DM not confirmed. Status: ${res?.status}`,
     }
-  } catch (e: any) {
+  } catch (e: unknown) {
     return {
       success: false,
-      error: e?.message ?? 'Twitter DM error',
+      error: e instanceof Error ? e.message : 'Twitter DM error',
     }
   }
 }

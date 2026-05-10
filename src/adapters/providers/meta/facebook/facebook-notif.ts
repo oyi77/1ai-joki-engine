@@ -13,11 +13,9 @@ export async function getNotifications(
   limit: number = 10,
   unreadOnly: boolean = false
 ): Promise<FacebookNotification[]> {
-  if (!cookie) throw new Error('No cookie provided')
+    if (!cookie) throw new Error('No cookie provided')
 
-  const cookieHeader = parseCookies(cookie)
-
-  try {
+    const cookieHeader = parseCookies(cookie)
     const commonHeaders = {
         'Cookie': cookieHeader,
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -103,7 +101,4 @@ export async function getNotifications(
       return notifications.filter(n => n.isUnread)
     }
     return notifications
-  } catch (e: any) {
-    throw e
-  }
 }

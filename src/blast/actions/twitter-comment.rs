@@ -1,16 +1,32 @@
-import { createHttpClient, parseCookies } from '../../../utils/http-client'
+/**
+ * Twitter comment action — reply to a tweet.
+ *
+ * Extracted from blast-runner.ts inline code (lines 122-179).
+ */
 
-export async function postTweet(
+import { createHttpClient, parseCookies } from '../../utils/http-client'
+
+/**
+ * Reply to a tweet (Twitter comment action).
+ * Used by the blast runner for 'comment' actions on Twitter.
+ *
+ * @param tweetId  Tweet ID to reply to
+ * @param message  Reply text
+ * @param cookie   Raw browser session cookie string
+ * @returns { success: boolean, error?: string }
+ */
+export async function twitterReply(
+  tweetId: string,
   message: string,
   cookie: string
-): Promise<{ success: boolean; error?: string; tweetId?: string }> {
+): Promise<{ success: boolean; error?: string }> {
   if (!cookie) return { success: false, error: 'Cookie not provided' }
-  if (!message) return { success: false, error: 'Message not provided' }
+  if (!tweetId) return { success: false, error: 'tweetId not provided' }
+  if (!message) return { success: false, error: 'message not provided' }
 
   const ckHeader = parseCookies(cookie)
   const ct0Match = ckHeader.match(/ct0=([^;]+)/)
   const ct0 = ct0Match?.[1] ?? ''
-
   try {
     const client = createHttpClient({
       baseURL: 'https://twitter.com',
@@ -25,10 +41,10 @@ export async function postTweet(
         'X-Twitter-Auth-Type': 'OAuth2Session',
       },
     })
-
     const body = {
       variables: {
         tweet_text: message,
+        reply: { in_reply_to_tweet_id: tweetId, exclude_reply_user_ids: [] },
         dark_request: false,
         media: { media_entities: [], possibly_sensitive: false },
         semantic_annotation_ids: [],
@@ -51,11 +67,14 @@ export async function postTweet(
       },
       queryId: 'SoVnbfCycZ7fERGCwpZkYA',
     }
-
-    const res = await client.post('/i/api/graphql/SoVnbfCycZ7fERGCwpZkYA/CreateTweet', body)
-    const tweetId = res?.data?.data?.create_tweet?.tweet_results?.result?.rest_id
-    return { success: !!tweetId, error: tweetId ? undefined : 'Tweet creation failed', tweetId }
+    const res = await client.post(
+      '/i/api/graphql/SoVnbfCycZ7fERGCwpZkYA/CreateTweet',
+      body
+    )
+    const tweetId_result = res?.data?.data?.create_tweet?.tweet_results?.result?.rest_id
+    return { success: !!tweetId_result, error: tweetId_result ? undefined : 'Twitter reply failed' }
   } catch (e: unknown) {
-    return { success: false, error: e instanceof Error ? e.message : 'Post tweet error' }
+    const message = e instanceof Error ? e.message : 'Twitter reply error'
+    return { success: false, error: message }
   }
 }

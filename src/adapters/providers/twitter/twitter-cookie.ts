@@ -105,10 +105,10 @@ export class TwitterCookieAdapter implements IAdapter {
       const ok = !!tweetId
       this.log(`Tweet result: ${tweetId ?? 'none'}`)
       return { success: ok, code: ok ? undefined : 'TWITTER_COOKIE_POST_ERROR' }
-    } catch (e: any) {
+    } catch (e: unknown) {
       return {
         success: false,
-        error: e?.message ?? 'Twitter cookie post error',
+        error: e instanceof Error ? e.message : 'Twitter cookie post error',
         code: 'TWITTER_COOKIE_POST_ERROR',
       }
     }
@@ -178,10 +178,10 @@ export class TwitterCookieAdapter implements IAdapter {
       const ok = !!tweetId
       this.log(`Reply tweet result: ${tweetId ?? 'none'}`)
       return { success: ok, code: ok ? undefined : 'TWITTER_COOKIE_REPLY_ERROR' }
-    } catch (e: any) {
+    } catch (e: unknown) {
       return {
         success: false,
-        error: e?.message ?? 'Twitter cookie reply error',
+        error: e instanceof Error ? e.message : 'Twitter cookie reply error',
         code: 'TWITTER_COOKIE_REPLY_ERROR',
       }
     }

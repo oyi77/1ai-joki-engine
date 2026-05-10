@@ -1,5 +1,5 @@
 import { describe, test, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-﻿import express from "express";
+import express from "express";
 import { createJobsRouter, createSchedulesRouter, resetSchedules } from "./jobs";
 import { runSchedulerTick } from "../scheduler/cron-scheduler";
 

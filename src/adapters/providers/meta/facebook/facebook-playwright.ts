@@ -1,6 +1,5 @@
 import { chromium } from 'playwright-extra';
 import type { Browser, BrowserContext, Page } from 'playwright';
-// @ts-ignore
 import stealth from 'puppeteer-extra-plugin-stealth';
 import { IAdapter, RateLimitStatus } from '../../../IAdapter';
 import { findFacebookTargets, FacebookFinderResult } from './facebook-finder';
@@ -28,7 +27,18 @@ export class FacebookPlaywrightAdapter implements IAdapter {
             this.context = await this.browser.newContext();
             this.page = await this.context.newPage();
 
-            const cookies = JSON.parse(this.rawCookieString).map((cookie: any) => ({
+            interface CookieData {
+                domain: string;
+                sameSite?: string;
+                name?: string;
+                value?: string;
+                path?: string;
+                secure?: boolean;
+                httpOnly?: boolean;
+                expirationDate?: number;
+                url?: string;
+            }
+            const cookies = JSON.parse(this.rawCookieString).map((cookie: CookieData) => ({
                 ...cookie,
                 domain: cookie.domain.startsWith('.') ? cookie.domain : `.${cookie.domain}`,
                 sameSite: cookie.sameSite === 'strict' ? 'Strict' : cookie.sameSite === 'no_restriction' ? 'None' : 'Lax',
