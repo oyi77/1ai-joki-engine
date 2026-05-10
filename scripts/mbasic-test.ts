@@ -1,11 +1,16 @@
 import axios from 'axios';
 
+interface Cookie {
+  name: string;
+  value: string;
+}
+
 // Parse raw JSON or string cookies
 function parseCookies(raw: string): string {
   if (raw.startsWith('[')) {
     try {
-      const arr = JSON.parse(raw);
-      return arr.map((c: any) => `${c.name}=${c.value}`).join('; ');
+      const arr: Cookie[] = JSON.parse(raw);
+      return arr.map((c) => `${c.name}=${c.value}`).join('; ');
     } catch (e) {
       return raw;
     }
@@ -34,7 +39,7 @@ async function getNotifications(cookieHeader: string) {
       console.log(`Found ${notifMatches.length} notification items.`);
       for (let i = 0; i < Math.min(5, notifMatches.length); i++) {
         // Strip HTML tags
-        let text = notifMatches[i].replace(/<[^>]+>/g, '').trim();
+        const text = notifMatches[i].replace(/<[^>]+>/g, '').trim();
         console.log(`- ${text}`);
       }
     } else {
@@ -45,8 +50,9 @@ async function getNotifications(cookieHeader: string) {
       console.log('Page Title:', titleMatch ? titleMatch[1] : 'Unknown');
     }
     
-  } catch (err: any) {
-    console.error('Error fetching notifications:', err.message);
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error('Error fetching notifications:', error.message);
   }
 }
 
@@ -66,36 +72,36 @@ async function searchFacebook(cookieHeader: string, query: string) {
     const resultLinks = html.match(/<a href="([^"]+)"><span>([^<]+)<\/span><\/a>/g) || html.match(/<a[^>]+href="\/profile\.php\?id=[^>]+>(.*?)<\/a>/g);
     
     const titleMatch = html.match(/<title>(.*?)<\/title>/);
-    console.log('Search Page Title:', titleMatch ? titleMatch[1] : 'Unknown');
     
-    if (html.includes('class="bz"')) {
-        console.log("Search page loaded successfully.");
+    console.log(`Page Title: ${titleMatch ? titleMatch[1] : 'Unknown'}`);
+    
+    if (resultLinks && resultLinks.length > 0) {
+      console.log(`Found ${resultLinks.length} search result links.`);
+      for (let i = 0; i < Math.min(5, resultLinks.length); i++) {
+        console.log(`- ${resultLinks[i]}`);
+      }
+    } else {
+      console.log('No search results found.');
     }
     
-    // Print snippet to analyze search result DOM
-    const snippetIndex = html.indexOf('id="browse_result_area"');
-    if (snippetIndex > -1) {
-        console.log("Found result area:");
-        // Just extract plain text from result area
-        const resultArea = html.substring(snippetIndex, snippetIndex + 2000).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
-        console.log(resultArea.substring(0, 500) + '...');
-    }
-
-  } catch (err: any) {
-    console.error('Error searching:', err.message);
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error('Error searching Facebook:', error.message);
   }
 }
 
 async function main() {
-  const cookieInput = process.argv[2];
-  if (!cookieInput) {
-    console.error('Please provide cookies');
-    process.exit(1);
+  if (process.argv.length < 4) {
+    console.log('Usage: ts-node mbasic-test.ts <cookieJson> <query>');
+    return;
   }
+  const cookieJson = process.argv[2];
+  const query = process.argv[3];
   
-  const cookieHeader = parseCookies(cookieInput);
+  const cookieHeader = parseCookies(cookieJson);
+  
   await getNotifications(cookieHeader);
-  await searchFacebook(cookieHeader, 'jual beli');
+  await searchFacebook(cookieHeader, query);
 }
 
 main();

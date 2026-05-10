@@ -1,19 +1,18 @@
 ﻿import { IAdapter, RateLimitStatus } from '../../IAdapter'
 import { getConfig } from '../../../config/secrets'
+import { RateLimiter, PLATFORM_QUOTAS } from '../../../queue/rate-limiter'
+
+const rateLimiter = new RateLimiter()
 
 // Lightweight Twitter adapter using twitter-api-v2 with lazy require
 // Supports Bearer token (OAuth 2.0) for read and OAuth 1.0a style for write when credentials are provided.
 export class TwitterAdapter implements IAdapter {
   private twitterClient: any
   private rwClient: any // write-capable client (readWrite)
-  private rateLimit?: RateLimitStatus | null
-  private rateLimitResetsAt: number = Date.now() + 60_000
-  private remaining: number = 100
   private logger?: (msg: string) => void
 
   constructor(opts?: { logger?: (msg: string) => void }) {
     this.logger = opts?.logger
-    this.rateLimit = null
   }
 
   private log(msg: string) {
@@ -94,8 +93,7 @@ export class TwitterAdapter implements IAdapter {
           error: 'Twitter API surface not supported in this runtime',
         }
       }
-      // Drain rate as a simple placeholder for rate-limiting demo
-      this.maybeDrainRate()
+      await rateLimiter.waitForToken('twitter')
       return { success: true }
     } catch (e: any) {
       const error = e?.message ?? 'Twitter post error'
@@ -131,7 +129,7 @@ export class TwitterAdapter implements IAdapter {
           error: 'Twitter API surface not supported for replies',
         }
       }
-      this.maybeDrainRate()
+      await rateLimiter.waitForToken('twitter')
       return { success: true }
     } catch (e: any) {
       const error = e?.message ?? 'Twitter reply error'
@@ -140,27 +138,12 @@ export class TwitterAdapter implements IAdapter {
   }
 
   async getRateLimitStatus(): Promise<RateLimitStatus | null> {
-    // Simple in-memory rate-limiting placeholder; refresh every minute
-    const now = Date.now()
-    if (now > this.rateLimitResetsAt) {
-      this.remaining = 100
-      this.rateLimitResetsAt = now + 60_000
-    }
+    const bucketInfo = rateLimiter.getBucketInfo('twitter')
     return {
-      limit: 100,
-      remaining: this.remaining,
-      reset: this.rateLimitResetsAt,
+      limit: PLATFORM_QUOTAS.twitter.capacity,
+      remaining: Math.floor(bucketInfo.tokens),
+      reset: Date.now() + 60_000,
     }
-  }
-
-  // Private helper to drain rate quota
-  private maybeDrainRate() {
-    const now = Date.now()
-    if (now > this.rateLimitResetsAt) {
-      this.remaining = 100
-      this.rateLimitResetsAt = now + 60_000
-    }
-    if (this.remaining > 0) this.remaining--
   }
 }
 

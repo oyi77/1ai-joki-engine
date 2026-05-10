@@ -6,6 +6,7 @@ import { loadConfig, getConfig } from '../config/secrets'
 import { initDatabase, initSqlJsDatabase, runMigrations } from '../db/sqlite'
 import { accountsRouter } from '../routes/accounts'
 import { templatesRouter } from '../routes/templates'
+import { authMiddleware } from '../middleware'
 import { postsRouter } from '../routes/posts'
 import { jobsRouter, schedulesRouter, defaultJobQueue, startCronScheduler } from '../routes/jobs'
 import { adaptersRouter } from '../routes/adapters'
@@ -93,6 +94,7 @@ export async function startServer() {
   }
 
   const app = createServer()
+  app.use('/v1', authMiddleware)
   app.use('/v1/accounts', accountsRouter)
   app.use('/v1/templates', templatesRouter)
   app.use('/v1/posts', postsRouter)

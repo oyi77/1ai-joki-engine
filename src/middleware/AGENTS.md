@@ -4,8 +4,16 @@
 
 ## STATUS
 
-Currently empty — JWT authentication is handled directly in individual route files rather than a centralized middleware module.
+JWT authentication middleware implemented. Applied globally to all `/v1/*` routes.
 
-## NOTE
+## STRUCTURE
 
-If middleware is added, follow the existing pattern of importing into specific route files rather than global application.
+- `auth.ts` - JWT authentication middleware with token validation
+- `index.ts` - Exports middleware for use in server
+- `auth.test.ts` - Unit tests with vitest
+
+## IMPLEMENTATION DETAILS
+
+- Health endpoint (`/v1/health`) is whitelisted to skip authentication
+- Invalid or missing tokens return 401 with error code
+- Decoded user payload attached to `req.user` for downstream handlers

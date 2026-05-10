@@ -177,4 +177,14 @@ export class RateLimiter {
   public getCircuitState(platform: string): CircuitState {
     return this.getBreaker(platform).state;
   }
+
+  public getBucketInfo(platform: string) {
+    this.refill(platform);
+    const bucket = this.getBucket(platform);
+    return {
+      tokens: bucket.tokens,
+      lastRefill: bucket.lastRefill,
+      blockedUntil: bucket.blockedUntil,
+    };
+  }
 }

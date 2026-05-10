@@ -1,8 +1,20 @@
 import { chromium } from 'playwright-extra';
 import stealth from 'puppeteer-extra-plugin-stealth';
-import { parseCookies } from '../src/utils/http-client';
+
+// parseCookies is imported from ../src/utils/http-client but not yet used
+// Keeping the import ready for future use
 
 chromium.use(stealth());
+
+interface Cookie {
+  name: string;
+  value: string;
+  domain: string;
+  path?: string;
+  secure?: boolean;
+  httpOnly?: boolean;
+  sameSite?: string;
+}
 
 async function main() {
   const cookieInput = process.argv[2];
@@ -10,7 +22,7 @@ async function main() {
     console.log('Provide cookie json');
     return;
   }
-  let rawCookies;
+  let rawCookies: Cookie[];
   try {
     rawCookies = JSON.parse(cookieInput);
   } catch (e) {
@@ -19,7 +31,7 @@ async function main() {
   }
   
   // Format cookies for Playwright
-  const pwCookies = rawCookies.map((c: any) => ({
+  const pwCookies: Cookie[] = rawCookies.map((c) => ({
     name: c.name,
     value: c.value,
     domain: c.domain.startsWith('.') ? c.domain : `.${c.domain}`,

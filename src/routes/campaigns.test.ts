@@ -4,7 +4,7 @@ import { createCampaignsRouter, getCampaignsRepo } from './campaigns'
 
 // Reset module-level singleton between tests
 beforeEach(() => {
-  ;(getCampaignsRepo as any)._reset?.()
+  (getCampaignsRepo as any)._reset?.()
 })
 
 function makeQueue() {

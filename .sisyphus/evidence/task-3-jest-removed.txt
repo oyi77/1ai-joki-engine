@@ -1,0 +1,20 @@
+
+ ✓ src/routes/campaigns.integration.test.ts > Campaign Integration Flow > should list campaigns with their posts
+ ✓ src/routes/campaigns.integration.test.ts > Campaign Integration Flow > should handle campaign deletion
+stdout | src/errors.test.ts > NotImplementedError > should create error with method name
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+ ✓ src/errors.test.ts > NotImplementedError > should create error with method name
+ ✓ src/queue/rate-limiter.test.ts > RateLimiter > should waitForToken
+
+ Test Files  31 passed (31)
+      Tests  160 passed (160)
+   Start at  01:46:00
+   Duration  4.10s (transform 373ms, setup 2.14s, collect 4.73s, tests 8.13s, environment 6ms, prepare 3.17s)
+

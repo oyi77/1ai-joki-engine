@@ -1,0 +1,500 @@
+
+/Users/paijo/1ai-joki-engine/scripts/db-init.ts
+  30:5   warning  'db' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  41:13  warning  Empty block statement                    no-empty
+  48:11  warning  Empty block statement                    no-empty
+
+/Users/paijo/1ai-joki-engine/scripts/fb-auto-bot.ts
+  17:12  warning  Unexpected constant condition  no-constant-condition
+
+/Users/paijo/1ai-joki-engine/scripts/seed-db.ts
+  3:13  warning  'fs' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/scripts/test-fb-home.ts
+   6:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  30:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/scripts/test-fb-notif-adapter.ts
+  21:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/scripts/test-fb-notif-gql.ts
+   7:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/scripts/test-fb-notifications.ts
+   6:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/scripts/test-fb-search.ts
+  93:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/scripts/test-fb.ts
+  55:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/scripts/test-gql.ts
+   6:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  99:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/scripts/test-m-fb.ts
+   6:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/scripts/test-mbasic-action.ts
+  31:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/Whatsapp/whatsapp.test.ts
+  2:26  warning  'it' is defined but never used          @typescript-eslint/no-unused-vars
+  2:38  warning  'vi' is defined but never used          @typescript-eslint/no-unused-vars
+  2:42  warning  'beforeEach' is defined but never used  @typescript-eslint/no-unused-vars
+  2:54  warning  'afterEach' is defined but never used   @typescript-eslint/no-unused-vars
+  2:76  warning  'afterAll' is defined but never used    @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/Whatsapp/whatsapp.ts
+  130:43  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  139:38  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  164:19  warning  'callback' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  164:35  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/facebook/chat.ts
+  113:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/facebook/comment.ts
+  118:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  147:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/facebook/facebook-cookies.test.ts
+  95:11  warning  'res' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/facebook/facebook-cookies.ts
+  85:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/facebook/facebook-finder.ts
+  88:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/facebook/facebook-notif.ts
+   20:3   warning  Unnecessary try/catch wrapper             no-useless-catch
+  106:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/facebook/facebook-playwright.ts
+   3:1   warning  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  31:75  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/facebook/facebook.ts
+  194:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  227:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/instagram/instagram-cookie.test.ts
+  15:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/instagram/instagram-cookie.ts
+   80:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  116:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/instagram/instagram.test.ts
+  1:26  warning  'it' is defined but never used            @typescript-eslint/no-unused-vars
+  1:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+  8:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/instagram/instagram.ts
+   18:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:70  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   52:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   53:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   98:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   99:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  152:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  177:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/threads/threads-cookie.test.ts
+   2:26  warning  'it' is defined but never used            @typescript-eslint/no-unused-vars
+   2:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+   2:65  warning  'beforeAll' is defined but never used     @typescript-eslint/no-unused-vars
+   2:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+  15:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/threads/threads-cookie.ts
+   85:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/threads/threads.test.ts
+   1:20  warning  'test' is defined but never used          @typescript-eslint/no-unused-vars
+   1:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+   1:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+  46:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/meta/threads/threads.ts
+   23:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   69:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   93:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/telegram/telegram-mtproto.test.ts
+  2:26  warning  'it' is defined but never used         @typescript-eslint/no-unused-vars
+  2:54  warning  'afterEach' is defined but never used  @typescript-eslint/no-unused-vars
+  2:65  warning  'beforeAll' is defined but never used  @typescript-eslint/no-unused-vars
+  2:76  warning  'afterAll' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/telegram/telegram-mtproto.ts
+   26:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   30:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   37:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   89:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  154:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  176:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/telegram/telegram.ts
+   6:16  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  21:23  warning  'err' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  21:28  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  25:17  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  44:17  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  72:17  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/twitter/comment.ts
+  61:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/twitter/dm.ts
+  72:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/twitter/post.ts
+  58:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/twitter/reply.ts
+  62:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/twitter/twitter-cookie.test.ts
+   2:26  warning  'it' is defined but never used            @typescript-eslint/no-unused-vars
+   2:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+   2:65  warning  'beforeAll' is defined but never used     @typescript-eslint/no-unused-vars
+   2:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+  15:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  80:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/twitter/twitter-cookie.ts
+  108:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  181:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/adapters/providers/twitter/twitter.ts
+   10:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   11:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   30:73  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   32:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   98:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  124:81  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  134:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/api/server.status-sync.test.ts
+   1:20  warning  'test' is defined but never used          @typescript-eslint/no-unused-vars
+   1:42  warning  'beforeEach' is defined but never used    @typescript-eslint/no-unused-vars
+   1:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+   1:65  warning  'beforeAll' is defined but never used     @typescript-eslint/no-unused-vars
+   1:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+  16:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  48:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  48:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/api/server.ts
+   82:9   warning  'wahaPort' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  109:17  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/action-picker.test.ts
+  19:12  warning  'chatCount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/blast/actions/instagram-comment.ts
+  47:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/actions/instagram-dm.ts
+  58:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/actions/telegram-send.ts
+  31:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/actions/threads-comment.ts
+  51:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/actions/twitter-comment.ts
+  76:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/actions/whatsapp-send.ts
+  26:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/blast-runner.test.ts
+  219:11  warning  'executedActionsRef' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/blast/blast-runner.ts
+  261:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  325:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/finders/instagram-finder.ts
+  96:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/blast/finders/twitter-finder.ts
+  94:11  warning  'screenNameRegex' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/config/runtime-secret-store.ts
+  32:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/config/secrets.ts
+   17:36   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:35   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:16   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   52:23   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   53:16   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   53:65   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:88   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:135  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  105:16   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:100  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:16   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:87   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:141  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:16   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  119:16   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:83   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:81   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:82   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:81   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  147:85   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  149:84   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/db/sqlite.ts
+    7:18  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   16:22  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   50:16  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   58:14  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   76:22  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   86:22  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   98:22  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  101:21  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  115:18  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  146:7   warning  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  160:35  warning  'args' is defined but never used. Allowed unused args must match /^_/u                                               @typescript-eslint/no-unused-vars
+  160:41  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/middleware/auth.test.ts
+  12:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/middleware/auth.ts
+  17:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/queue/job-queue.test.ts
+   1:26   warning  'it' is defined but never used                                             @typescript-eslint/no-unused-vars
+   1:38   warning  'vi' is defined but never used                                             @typescript-eslint/no-unused-vars
+   1:42   warning  'beforeEach' is defined but never used                                     @typescript-eslint/no-unused-vars
+   1:54   warning  'afterEach' is defined but never used                                      @typescript-eslint/no-unused-vars
+   1:65   warning  'beforeAll' is defined but never used                                      @typescript-eslint/no-unused-vars
+   1:76   warning  'afterAll' is defined but never used                                       @typescript-eslint/no-unused-vars
+   7:23   warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+   9:29   warning  'to' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+   9:41   warning  'message' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  16:9    warning  'finishedId' is assigned a value but never used                            @typescript-eslint/no-unused-vars
+  29:99   warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  35:23   warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  38:22   warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+  45:9    warning  'finishedId' is assigned a value but never used                            @typescript-eslint/no-unused-vars
+  57:120  warning  Unexpected any. Specify a different type                                   @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/queue/job-queue.ts
+    3:50  warning  'Job' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+   21:52  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   23:53  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   25:42  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   25:53  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   37:13  warning  'BullMq' is assigned a value but never used                                                                          @typescript-eslint/no-unused-vars
+   47:9   warning  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   48:96  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   56:50  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   63:83  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   66:75  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   84:85  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+   87:76  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  106:89  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  122:86  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  158:25  warning  Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/queue/rate-limiter.test.ts
+  1:20  warning  'test' is defined but never used       @typescript-eslint/no-unused-vars
+  1:38  warning  'vi' is defined but never used         @typescript-eslint/no-unused-vars
+  1:54  warning  'afterEach' is defined but never used  @typescript-eslint/no-unused-vars
+  1:65  warning  'beforeAll' is defined but never used  @typescript-eslint/no-unused-vars
+  1:76  warning  'afterAll' is defined but never used   @typescript-eslint/no-unused-vars
+  2:1   warning  Irregular whitespace not allowed       no-irregular-whitespace
+
+/Users/paijo/1ai-joki-engine/src/queue/rate-limiter.ts
+   94:15  warning  'elapsed' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  126:13  warning  'quota' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/queue/retry.test.ts
+    7:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   29:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   56:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   82:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/queue/retry.ts
+  12:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/repos/campaignsRepo.ts
+  174:15  warning  Empty block statement  no-empty
+
+/Users/paijo/1ai-joki-engine/src/repos/jobsRepo.ts
+  52:11  warning  'errorMessage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/routes/accounts.test.ts
+   1:20  warning  'test' is defined but never used          @typescript-eslint/no-unused-vars
+   1:38  warning  'vi' is defined but never used            @typescript-eslint/no-unused-vars
+   1:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+   1:65  warning  'beforeAll' is defined but never used     @typescript-eslint/no-unused-vars
+   1:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+   3:10  warning  'getDb' is defined but never used         @typescript-eslint/no-unused-vars
+   7:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  82:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/routes/accounts.ts
+  43:31  warning  'email' is assigned a value but never used             @typescript-eslint/no-unused-vars
+  50:9   warning  'credentials_hash' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/routes/blast.test.ts
+  9:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/routes/campaigns.integration.test.ts
+   36:16  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   43:14  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   55:16  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   62:14  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  158:11  warning  'campaign1' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  166:11  warning  'campaign2' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/routes/campaigns.test.ts
+    1:20  warning  'test' is defined but never used          @typescript-eslint/no-unused-vars
+    1:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+    1:65  warning  'beforeAll' is defined but never used     @typescript-eslint/no-unused-vars
+    1:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+    7:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   17:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   21:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   83:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  120:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  134:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/routes/e2e.test.ts
+   87:52  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  149:11  warning  'account' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  157:11  warning  'campaign' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/routes/jobs.test.ts
+   1:20  warning  'test' is defined but never used          @typescript-eslint/no-unused-vars
+   1:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+   1:65  warning  'beforeAll' is defined but never used     @typescript-eslint/no-unused-vars
+   1:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+   2:1   warning  Irregular whitespace not allowed          no-irregular-whitespace
+   6:16  warning  'startApp' is defined but never used      @typescript-eslint/no-unused-vars
+  29:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  76:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  90:58  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  95:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/routes/jobs.ts
+   1:8   warning  'express' is defined but never used             @typescript-eslint/no-unused-vars
+   6:3   warning  'resetSchedules' is defined but never used      @typescript-eslint/no-unused-vars
+   7:3   warning  'startCronScheduler' is defined but never used  @typescript-eslint/no-unused-vars
+  10:3   warning  'schedules' is defined but never used           @typescript-eslint/no-unused-vars
+  33:44  warning  'to' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  51:11  warning  'job' is assigned a value but never used        @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/routes/templates.test.ts
+  1:20  warning  'test' is defined but never used             @typescript-eslint/no-unused-vars
+  1:30  warning  'expect' is defined but never used           @typescript-eslint/no-unused-vars
+  1:38  warning  'vi' is defined but never used               @typescript-eslint/no-unused-vars
+  1:42  warning  'beforeEach' is defined but never used       @typescript-eslint/no-unused-vars
+  1:54  warning  'afterEach' is defined but never used        @typescript-eslint/no-unused-vars
+  1:65  warning  'beforeAll' is defined but never used        @typescript-eslint/no-unused-vars
+  1:76  warning  'afterAll' is defined but never used         @typescript-eslint/no-unused-vars
+  2:1   warning  Irregular whitespace not allowed             no-irregular-whitespace
+  2:11  warning  'templatesRouter' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/paijo/1ai-joki-engine/src/routes/track.test.ts
+   1:20  warning  'test' is defined but never used          @typescript-eslint/no-unused-vars
+   1:38  warning  'vi' is defined but never used            @typescript-eslint/no-unused-vars
+   1:42  warning  'beforeEach' is defined but never used    @typescript-eslint/no-unused-vars
+   1:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+   1:65  warning  'beforeAll' is defined but never used     @typescript-eslint/no-unused-vars
+   1:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+  14:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/routes/webhooks.test.ts
+    1:20  warning  'test' is defined but never used          @typescript-eslint/no-unused-vars
+    1:42  warning  'beforeEach' is defined but never used    @typescript-eslint/no-unused-vars
+    1:54  warning  'afterEach' is defined but never used     @typescript-eslint/no-unused-vars
+    1:65  warning  'beforeAll' is defined but never used     @typescript-eslint/no-unused-vars
+    1:76  warning  'afterAll' is defined but never used      @typescript-eslint/no-unused-vars
+   12:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   16:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   58:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  140:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/scheduler/cron-scheduler.ts
+  113:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/smoke.test.ts
+  39:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:31  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/types/sqljs.d.ts
+  2:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  2:43  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/types/supertest.d.ts
+  2:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  2:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/paijo/1ai-joki-engine/src/utils/randomTargets.test.ts
+  34:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:86  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:70  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:87  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  85:83  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 333 problems (0 errors, 333 warnings)
+

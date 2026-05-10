@@ -1,0 +1,58 @@
+name: joki-blast-engine
+
+services:
+  api:
+    build:
+      context: .
+      target: development
+    ports:
+      - "3456:3456"
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./data:/app/data
+    env_file: .env
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+      - API_PORT=3456
+      - API_HOST=0.0.0.0
+    depends_on:
+      - redis
+
+  workers:
+    build:
+      context: .
+      target: development
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./data:/app/data
+    env_file: .env
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+
+  dashboard:
+    build:
+      context: ./dashboard
+      target: development
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./dashboard:/app
+      - /app/node_modules
+    env_file: .env
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3456
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

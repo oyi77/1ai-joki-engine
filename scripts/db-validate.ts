@@ -1,13 +1,13 @@
 // Simple stub validator for the SQLite schema against TS types
 // This file is a placeholder for future schema validation logic.
 
-import { existsSync } from 'fs';
+import * as fs from 'fs';
 import path from 'path';
 
 const DB_PATH = path.resolve(__dirname, '../data/app.db');
 
 export function validateSchema(): void {
-  if (!existsSync(DB_PATH)) {
+  if (!fs.existsSync(DB_PATH)) {
     console.warn('Database not found at', DB_PATH);
     return;
   }

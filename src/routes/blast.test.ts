@@ -4,7 +4,7 @@ import request from 'supertest'
 
 // Mock blast runner to avoid real execution
 vi.mock('../blast/blast-runner', () => {
-  let running = false
+  const running = false
   return {
     runBlast: vi.fn().mockImplementation(async (config: any) => {
       if (running) {

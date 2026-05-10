@@ -1,16 +1,16 @@
 import axios from 'axios';
-import fs from 'fs';
+import * as fs from 'fs';
 
 function parseCookies(raw: string): string {
   if (raw.startsWith('[')) {
     try {
       const arr = JSON.parse(raw);
-      return arr.map((c: any) => `${c.name}=${c.value}`).join('; ');
+      return arr.map((c: { name: string, value: string }) => `${c.name}=${c.value}`).join('; ');
     } catch (e) { return raw; }
   }
   return raw;
 }
-async function main() {
+async function main(): Promise<void> {
   const cookieInput = process.argv[2];
   const cookieHeader = parseCookies(cookieInput);
 
@@ -34,8 +34,12 @@ async function main() {
     const res = await client.get('/notifications');
     fs.writeFileSync('fb_notifications.html', res.data);
     console.log('Saved to fb_notifications.html');
-  } catch (err: any) {
-    console.error('Error:', err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error('Error:', err.message);
+    } else {
+      console.error('Error:', err);
+    }
   }
 }
 main();

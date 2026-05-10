@@ -1,21 +1,20 @@
 #!/usr/bin/env ts-node
 /* Seed script for development: creates one account, one template, and one scheduled job */
+import * as fs from 'fs';
 import path from 'path';
-import fs from 'fs';
-const dbModule = require('../src/db/sqlite.ts');
-const AccountsRepo = require('../src/repos/accountsRepo').AccountsRepo;
-const TemplatesRepo = require('../src/repos/templatesRepo').TemplatesRepo;
-const JobsRepo = require('../src/repos/jobsRepo').JobsRepo;
+const dbModule = await import('../src/db/sqlite.js');
+const AccountsRepo = (await import('../src/repos/accountsRepo.js')).AccountsRepo;
+const TemplatesRepo = (await import('../src/repos/templatesRepo.js')).TemplatesRepo;
+const JobsRepo = (await import('../src/repos/jobsRepo.js')).JobsRepo;
 
-async function main() {
+async function main(): Promise<void> {
   const DB_PATH = path.resolve(process.cwd(), 'data', 'app.db');
   // init (native or sql.js)
   try {
     dbModule.initDatabase(DB_PATH);
     console.log('Using native better-sqlite3');
-  } catch (e) {
+  } catch (e: unknown) {
     console.log('Falling back to sql.js');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     await dbModule.initSqlJsDatabase(DB_PATH);
     console.log('Initialized sql.js DB');
   }
@@ -40,4 +39,8 @@ async function main() {
   if (dbModule.closeDatabase) dbModule.closeDatabase();
 }
 
-main().catch((err) => { console.error(err); process.exit(1); });
+main().catch((err: unknown) => {
+  const errorMessage = err instanceof Error ? err.message : String(err);
+  console.error(errorMessage);
+  process.exit(1);
+});

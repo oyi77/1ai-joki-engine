@@ -5,7 +5,13 @@ dist/
 .env.production
 *.log
 data/*.db
+data/*.db-wal
+data/*.db-shm
+next.db
+*.tsbuildinfo
+tsconfig.tsbuildinfo
 coverage/
 .DS_Store
+.next/
 dashboard/.next/
 dashboard/node_modules/

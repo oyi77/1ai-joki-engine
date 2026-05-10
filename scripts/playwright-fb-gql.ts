@@ -24,7 +24,7 @@ async function main() {
 
   const page = await context.newPage();
   
-  let docId = '';
+  // docId is intentionally unused - we're intercepting GraphQL requests to extract it
   
   // Intercept GraphQL requests
   page.on('request', request => {

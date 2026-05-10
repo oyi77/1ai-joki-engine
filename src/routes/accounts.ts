@@ -16,7 +16,7 @@ export function getAccountsRepo(db?: DB) {
   return accountsRepo
 }
 
-;(getAccountsRepo as unknown as { _reset?: () => void })._reset = () => {
+(getAccountsRepo as unknown as { _reset?: () => void })._reset = () => {
   accountsRepo = null
 }
 

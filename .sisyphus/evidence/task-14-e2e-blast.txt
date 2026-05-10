@@ -1,0 +1,72 @@
+
+ RUN  v0.34.6 /Users/paijo/1ai-joki-engine
+
+stdout | src/routes/blast-e2e.test.ts > Blast E2E > should trigger a Facebook comment blast via HTTP
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+stdout | src/routes/blast-e2e.test.ts > Blast E2E > should trigger a Facebook comment blast via HTTP
+[blast] facebook | 1/1 | comment → post1
+[blast] ✓ 1/1 success
+
+stdout | src/routes/blast-e2e.test.ts > Blast E2E > should return 409 when blast already running
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+stdout | src/routes/blast-e2e.test.ts > Blast E2E > should return 409 when blast already running
+[blast] facebook | 1/1 | comment → post1
+[blast] ✓ 1/1 success
+
+stdout | src/routes/blast-e2e.test.ts > Blast E2E > should return 400 for invalid platform
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+stdout | src/routes/blast-e2e.test.ts > Blast E2E > should return 400 when missing required fields
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+stdout | src/routes/blast-e2e.test.ts > Blast E2E > should return 401 for missing token
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+stdout | src/routes/blast-e2e.test.ts > Blast E2E > should return 400 for WhatsApp without targets
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+ ✓ src/routes/blast-e2e.test.ts  (6 tests) 96ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  03:24:32
+   Duration  367ms (transform 69ms, setup 21ms, collect 86ms, tests 96ms, environment 0ms, prepare 38ms)
+

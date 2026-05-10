@@ -1,11 +1,16 @@
 import axios from 'axios';
 import fs from 'fs';
 
+interface Cookie {
+  name: string;
+  value: string;
+}
+
 function parseCookies(raw: string): string {
   if (raw.startsWith('[')) {
     try {
-      const arr = JSON.parse(raw);
-      return arr.map((c: any) => `${c.name}=${c.value}`).join('; ');
+      const arr: Cookie[] = JSON.parse(raw);
+      return arr.map((c) => `${c.name}=${c.value}`).join('; ');
     } catch (e) { return raw; }
   }
   return raw;
@@ -35,13 +40,14 @@ async function main() {
     fs.writeFileSync('mbasic_fb_notifications.html', res.data);
     console.log('Saved to mbasic_fb_notifications.html');
     
-    let html = res.data as string;
+    const html = res.data as string;
     let stripped = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
     stripped = stripped.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
     const text = stripped.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     console.log("Text content snippet:", text.substring(0, 500));
-  } catch (err: any) {
-    console.error('Error:', err.message);
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error('Error:', error.message);
   }
 }
 main();

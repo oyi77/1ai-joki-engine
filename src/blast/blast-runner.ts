@@ -29,12 +29,17 @@ import type {
 import { pickAction } from './action-picker'
 import { getDelay, sleep } from './delay'
 
-// ── Adapter action imports ──────────────────────────────────────────
+// ── Action imports ────────────────────────────────────────────────────
 
-import { postComment } from '../adapters/providers/meta/facebook/comment'
-import { sendPrivateMessage } from '../adapters/providers/meta/facebook/chat'
+import { facebookPostComment } from './actions/facebook-comment'
+import { facebookSendDM } from './actions/facebook-dm'
 import { sendTwitterDM } from '../adapters/providers/twitter/dm'
 import { sendInstagramDM } from './actions/instagram-dm'
+import { instagramPostComment } from './actions/instagram-comment'
+import { twitterReply } from './actions/twitter-comment'
+import { threadsReply } from './actions/threads-comment'
+import { whatsappSendMessage } from './actions/whatsapp-send'
+import { telegramSendMessage } from './actions/telegram-send'
 
 // ── Finder imports ──────────────────────────────────────────────────
 
@@ -83,160 +88,37 @@ async function executeAction(
   switch (platform) {
     case 'facebook':
       if (action === 'comment') {
-        return postComment(targetId, message, cookie)
+        return facebookPostComment(targetId, message, cookie)
       } else {
-        return sendPrivateMessage(targetId, message, cookie)
+        return facebookSendDM(targetId, message, cookie)
       }
 
     case 'instagram':
       if (action === 'comment') {
-        // Use Instagram cookie adapter's reply-to-media endpoint
-        const { createHttpClient, parseCookies } = await import('../utils/http-client')
-        const cookieHeader = parseCookies(cookie)
-        const csrfMatch = cookieHeader.match(/csrftoken=([^;]+)/)
-        const csrfToken = csrfMatch?.[1] ?? ''
-        try {
-          const client = createHttpClient({
-            baseURL: 'https://www.instagram.com',
-            timeout: 15_000,
-            headers: {
-              Cookie: cookieHeader,
-              'X-CSRFToken': csrfToken,
-              'X-IG-App-ID': '936619743392459',
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'User-Agent':
-                'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Instagram 303.0.0.11.109',
-            },
-          })
-          const params = new URLSearchParams({ comment_text: message })
-          const res = await client.post(`/api/v1/media/${targetId}/comment/`, params.toString())
-          const ok = res?.data?.status === 'ok' || res?.status === 200
-          return { success: ok, error: ok ? undefined : 'IG comment failed' }
-        } catch (e: any) {
-          return { success: false, error: e?.message ?? 'IG comment error' }
-        }
+        return instagramPostComment(targetId, message, cookie)
       } else {
         return sendInstagramDM(targetId, message, cookie)
       }
 
     case 'twitter':
       if (action === 'comment') {
-        // Reply to tweet using TwitterCookieAdapter pattern
-        const { createHttpClient: createClient, parseCookies: parseCk } = await import(
-          '../utils/http-client'
-        )
-        const ckHeader = parseCk(cookie)
-        const ct0Match = ckHeader.match(/ct0=([^;]+)/)
-        const ct0 = ct0Match?.[1] ?? ''
-        try {
-          const client = createClient({
-            baseURL: 'https://twitter.com',
-            timeout: 15_000,
-            headers: {
-              Cookie: ckHeader,
-              'X-Csrf-Token': ct0,
-              Authorization:
-                'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
-              'Content-Type': 'application/json',
-              'X-Twitter-Active-User': 'yes',
-              'X-Twitter-Auth-Type': 'OAuth2Session',
-            },
-          })
-          const body = {
-            variables: {
-              tweet_text: message,
-              reply: { in_reply_to_tweet_id: targetId, exclude_reply_user_ids: [] },
-              dark_request: false,
-              media: { media_entities: [], possibly_sensitive: false },
-              semantic_annotation_ids: [],
-            },
-            features: {
-              tweetypie_unmention_optimization_enabled: true,
-              responsive_web_edit_tweet_api_enabled: true,
-              graphql_is_translatable_rweb_tweet_is_translatable_enabled: true,
-              view_counts_everywhere_api_enabled: true,
-              longform_notetweets_consumption_enabled: true,
-              tweet_awards_web_tipping_enabled: false,
-              freedom_of_speech_not_reach_fetch_enabled: true,
-              standardized_nudges_misinfo: true,
-              longform_notetweets_rich_text_read_enabled: true,
-              responsive_web_graphql_exclude_directive_enabled: true,
-              verified_phone_label_enabled: false,
-              responsive_web_graphql_skip_user_profile_image_extensions_enabled: false,
-              responsive_web_graphql_timeline_navigation_enabled: true,
-              responsive_web_enhance_cards_enabled: false,
-            },
-            queryId: 'SoVnbfCycZ7fERGCwpZkYA',
-          }
-          const res = await client.post(
-            '/i/api/graphql/SoVnbfCycZ7fERGCwpZkYA/CreateTweet',
-            body
-          )
-          const tweetId = res?.data?.data?.create_tweet?.tweet_results?.result?.rest_id
-          return { success: !!tweetId, error: tweetId ? undefined : 'Twitter reply failed' }
-        } catch (e: any) {
-          return { success: false, error: e?.message ?? 'Twitter reply error' }
-        }
+        return twitterReply(targetId, message, cookie)
       } else {
         return sendTwitterDM(targetId, message, cookie)
       }
 
     case 'threads':
       if (action === 'comment') {
-        // Reply to thread using ThreadsCookieAdapter pattern
-        const { createHttpClient: createCl, parseCookies: parseCookiesTh } = await import(
-          '../utils/http-client'
-        )
-        const thCookie = parseCookiesTh(cookie)
-        const thCsrf = thCookie.match(/csrftoken=([^;]+)/)?.[1] ?? ''
-        try {
-          const client = createCl({
-            baseURL: 'https://www.threads.net',
-            timeout: 15_000,
-            headers: {
-              Cookie: thCookie,
-              'X-CSRFToken': thCsrf,
-              'X-IG-App-ID': '238260118697367',
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'User-Agent':
-                'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Instagram 303.0.0.11.109',
-            },
-          })
-          const params = new URLSearchParams({
-            text_post_app_info: JSON.stringify({ reply_control: 0, replied_to_id: targetId }),
-            source_type: '4',
-            caption: message,
-            upload_id: String(Date.now()),
-          })
-          const res = await client.post(
-            '/api/v1/media/configure_text_post_app_feed/',
-            params.toString()
-          )
-          const ok = res?.data?.status === 'ok' || res?.status === 200
-          return { success: ok, error: ok ? undefined : 'Threads reply failed' }
-        } catch (e: any) {
-          return { success: false, error: e?.message ?? 'Threads reply error' }
-        }
+        return threadsReply(targetId, message, cookie)
       } else {
-        // Threads DM not widely supported — log as unsupported
         return { success: false, error: 'Threads DM not supported' }
       }
 
     case 'whatsapp':
-      // WhatsApp is chat-only, handled via adapter sendMessage
-      // Import dynamically to avoid circular
-      try {
-        const { WhatsAppAdapter } = await import(
-          '../adapters/providers/meta/Whatsapp/whatsapp'
-        )
-        const adapter = new WhatsAppAdapter()
-        await adapter.connect()
-        const result = await adapter.sendMessage(targetId, message)
-        await adapter.disconnect()
-        return result
-      } catch (e: any) {
-        return { success: false, error: e?.message ?? 'WhatsApp error' }
-      }
+      return whatsappSendMessage(targetId, message)
+
+    case 'telegram':
+      return telegramSendMessage(targetId, message)
 
     default:
       return { success: false, error: `Unsupported platform: ${platform}` }

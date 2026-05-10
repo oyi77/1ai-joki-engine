@@ -1,0 +1,3 @@
+joki-blast-engine@0.1.0 /Users/paijo/1ai-joki-engine
+└── twitter-api-v2@1.29.0
+

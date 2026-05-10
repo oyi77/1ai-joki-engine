@@ -4,7 +4,7 @@
  * Covers platforms, action types, target shape, configuration, and result.
  */
 
-export type BlastPlatform = 'facebook' | 'instagram' | 'twitter' | 'threads' | 'whatsapp'
+export type BlastPlatform = 'facebook' | 'instagram' | 'twitter' | 'threads' | 'whatsapp' | 'telegram'
 
 export type BlastAction = 'comment' | 'chat'
 

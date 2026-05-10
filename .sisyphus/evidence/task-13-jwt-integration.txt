@@ -1,0 +1,46 @@
+
+ RUN  v0.34.6 /Users/paijo/1ai-joki-engine
+
+stdout | unknown test
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+stdout | src/middleware/auth.integration.test.ts > JWT Auth Integration > should return 401 for protected routes without token
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+stdout | src/middleware/auth.integration.test.ts > JWT Auth Integration > should return 401 for protected routes with invalid token
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+stdout | src/middleware/auth.integration.test.ts > JWT Auth Integration > should allow access with valid JWT token
+sqlite: applied migration 001_create_core_tables.sql
+sqlite: applied migration 001_init.sql
+sqlite: applied migration 002_add_template_type.sql
+sqlite: applied migration 003_create_runtime_settings.sql
+sqlite: applied migration 004_create_campaigns.sql
+sqlite: applied migration 005_create_link_clicks.sql
+sqlite: applied migration 006_create_leads.sql
+
+ ✓ src/middleware/auth.integration.test.ts  (4 tests) 60ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  03:20:32
+   Duration  365ms (transform 42ms, setup 22ms, collect 102ms, tests 60ms, environment 0ms, prepare 42ms)
+

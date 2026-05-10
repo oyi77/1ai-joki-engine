@@ -4,7 +4,7 @@ import { getDb } from '../db/sqlite'
 import { accountsRouter, getAccountsRepo } from './accounts'
 
 beforeEach(() => {
-  ;(getAccountsRepo as any)._reset?.()
+  (getAccountsRepo as any)._reset?.()
 })
 
 async function startApp() {
