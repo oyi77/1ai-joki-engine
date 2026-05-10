@@ -14,12 +14,15 @@
 | `templates.ts` | ~119 | Template management |
 | `webhooks.ts` | ~115 | Inbound webhook handlers |
 | `track.ts` | ~61 | Link tracking & stats |
+| `adapters.ts` | — | Adapter registration + proxy |
+| `settings.ts` | — | Runtime settings CRUD |
 
 ## TEST FILES
 
 - `campaigns.test.ts`, `campaigns.integration.test.ts`
 - `blast.test.ts`, `e2e.test.ts`
 - `jobs.test.ts`, `accounts.test.ts`
+- `templates.test.ts`, `track.test.ts`, `webhooks.test.ts`
 
 ## CONVENTIONS
 
