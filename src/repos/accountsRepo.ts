@@ -19,10 +19,6 @@ export class AccountsRepo {
 
   create(a: Omit<Account, 'id' | 'created_at'>): Account {
     const id = randomUUID()
-    console.debug('[AccountsRepo] create called', {
-      platform: a.platform,
-      display_name: a.display_name,
-    })
     const db = this.db ?? getDb()
     const isSqlJs = !!(db && (db as unknown as { __isSqlJs?: boolean })?.__isSqlJs)
     const stmt =

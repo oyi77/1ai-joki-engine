@@ -19,7 +19,7 @@ vi.mock('axios', () => {
 let tempDbPath = path.resolve(process.cwd(), 'data', 'test.db');
 
 beforeEach(async () => {
-  if (fs.existsSync(tempDbPath)) fs.unlinkSync(tempDbPath);
+  try { fs.unlinkSync(tempDbPath); } catch { /* file may not exist in non-DB tests */ }
   await initSqlJsDatabase(tempDbPath);
   runMigrations(path.resolve(process.cwd(), 'migrations'));
 });
