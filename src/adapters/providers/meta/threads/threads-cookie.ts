@@ -101,6 +101,10 @@ export class ThreadsCookieAdapter implements IAdapter {
     message: string
   ): Promise<{ success: boolean; error?: string; code?: string }> {
     if (!this.cookieHeader) await this.connect()
+    this.maybeDrainRate()
+    if (this.rateRemaining <= 0) {
+      return { success: false, code: 'RATE_LIMIT_EXCEEDED', error: 'Rate limit exceeded' }
+    }
     try {
       const client = createHttpClient({
         baseURL: 'https://www.threads.net',
@@ -127,16 +131,17 @@ export class ThreadsCookieAdapter implements IAdapter {
       const ok = res?.data?.status === 'ok' || res?.status === 200
       this.log(`Reply result: ${res?.data?.status}`)
       return { success: ok, code: ok ? undefined : 'THREADS_COOKIE_REPLY_ERROR' }
-    } catch (e: any) {
+    } catch (e: unknown) {
       return {
         success: false,
-        error: e?.message ?? 'Threads cookie reply error',
+        error: e instanceof Error ? e.message : 'Threads cookie reply error',
         code: 'THREADS_COOKIE_REPLY_ERROR',
       }
     }
   }
 
   async getRateLimitStatus(): Promise<RateLimitStatus | null> {
+    this.maybeDrainRate()
     return { limit: 30, remaining: this.rateRemaining, reset: this.rateReset }
   }
 

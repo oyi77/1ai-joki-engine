@@ -188,6 +188,7 @@ export class TwitterCookieAdapter implements IAdapter {
   }
 
   async getRateLimitStatus(): Promise<RateLimitStatus | null> {
+    this.maybeDrainRate()
     return { limit: 50, remaining: this.rateRemaining, reset: this.rateReset }
   }
 

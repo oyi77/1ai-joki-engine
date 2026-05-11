@@ -77,10 +77,10 @@ export class InstagramCookieAdapter implements IAdapter {
       const ok = res?.data?.status === 'ok' || res?.status === 200
       this.log(`Post result: ${res?.data?.status}`)
       return { success: ok, code: ok ? undefined : 'IG_COOKIE_POST_ERROR' }
-    } catch (e: any) {
+    } catch (e: unknown) {
       return {
         success: false,
-        error: e?.message ?? 'IG cookie post error',
+        error: e instanceof Error ? e.message : 'IG cookie post error',
         code: 'IG_COOKIE_POST_ERROR',
       }
     }
@@ -96,6 +96,10 @@ export class InstagramCookieAdapter implements IAdapter {
     message: string
   ): Promise<{ success: boolean; error?: string; code?: string }> {
     if (!this.cookieHeader) await this.connect()
+    this.maybeDrainRate()
+    if (this.rateRemaining <= 0) {
+      return { success: false, code: 'RATE_LIMIT_EXCEEDED', error: 'Rate limit exceeded' }
+    }
     try {
       const client = createHttpClient({
         baseURL: 'https://www.instagram.com',
@@ -113,16 +117,17 @@ export class InstagramCookieAdapter implements IAdapter {
       const res = await client.post(`/api/v1/media/${to}/comment/`, params.toString())
       const ok = res?.data?.status === 'ok' || res?.status === 200
       return { success: ok, code: ok ? undefined : 'IG_COOKIE_REPLY_ERROR' }
-    } catch (e: any) {
+    } catch (e: unknown) {
       return {
         success: false,
-        error: e?.message ?? 'IG cookie reply error',
+        error: e instanceof Error ? e.message : 'IG cookie reply error',
         code: 'IG_COOKIE_REPLY_ERROR',
       }
     }
   }
 
   async getRateLimitStatus(): Promise<RateLimitStatus | null> {
+    this.maybeDrainRate()
     return { limit: 30, remaining: this.rateRemaining, reset: this.rateReset }
   }
 
