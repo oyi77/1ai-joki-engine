@@ -1,20 +1,28 @@
-import { chromium } from 'playwright-extra';
 import type { Browser, BrowserContext, Page } from 'playwright';
-import stealth from 'puppeteer-extra-plugin-stealth';
 import { IAdapter, RateLimitStatus } from '../../../IAdapter';
 import { findFacebookTargets, FacebookFinderResult } from './facebook-finder';
 import { getNotifications, FacebookNotification } from './facebook-notif';
 
-chromium.use(stealth());
+export interface FacebookAdapterOptions {
+    logger?: (message: string) => void;
+    headless?: boolean;
+}
 
 export class FacebookPlaywrightAdapter implements IAdapter {
     private browser: Browser | null = null;
     private context: BrowserContext | null = null;
-    private page: Page | null = null;
+    private _page: Page | null = null;
     private rawCookieString: string;
+    private opts: FacebookAdapterOptions;
+    private _connected = false;
 
-    constructor(private cookieJsonString: string, private opts?: { logger?: (message: string) => void }) {
+    get page(): Page | null {
+        return this._page;
+    }
+
+    constructor(cookieJsonString: string, opts?: FacebookAdapterOptions) {
         this.rawCookieString = cookieJsonString;
+        this.opts = opts ?? {};
     }
 
     private log(message: string) {
@@ -22,10 +30,14 @@ export class FacebookPlaywrightAdapter implements IAdapter {
     }
 
     async connect() {
+        if (this._connected) return
         try {
-            this.browser = await chromium.launch({ headless: false });
+            const { chromium: chr } = await import('playwright-extra')
+            const stealthPlugin = (await import('puppeteer-extra-plugin-stealth')).default
+            const browserWithStealth = chr.use(stealthPlugin())
+            this.browser = await browserWithStealth.launch({ headless: this.opts.headless ?? true });
             this.context = await this.browser.newContext();
-            this.page = await this.context.newPage();
+            this._page = await this.context.newPage();
 
             interface CookieData {
                 domain: string;
@@ -38,17 +50,39 @@ export class FacebookPlaywrightAdapter implements IAdapter {
                 expirationDate?: number;
                 url?: string;
             }
-            const cookies = JSON.parse(this.rawCookieString).map((cookie: CookieData) => ({
-                ...cookie,
-                domain: cookie.domain.startsWith('.') ? cookie.domain : `.${cookie.domain}`,
-                sameSite: cookie.sameSite === 'strict' ? 'Strict' : cookie.sameSite === 'no_restriction' ? 'None' : 'Lax',
+
+            let parsedCookies: CookieData[]
+            try {
+                parsedCookies = JSON.parse(this.rawCookieString)
+            } catch {
+                parsedCookies = this.rawCookieString.split(';').map(pair => {
+                    const eq = pair.indexOf('=')
+                    if (eq < 0) return null
+                    return {
+                        name: pair.slice(0, eq).trim(),
+                        value: pair.slice(eq + 1).trim(),
+                        domain: '.facebook.com',
+                        path: '/',
+                    } as CookieData
+                }).filter((c): c is CookieData => c !== null)
+            }
+
+            const cookies = parsedCookies.map(c => ({
+                name: c.name!,
+                value: c.value!,
+                domain: c.domain ?? '.facebook.com',
+                path: c.path ?? '/',
+                secure: !!c.secure,
+                httpOnly: !!c.httpOnly,
+                sameSite: (c.sameSite === 'strict' ? 'Strict' : c.sameSite === 'no_restriction' ? 'None' : 'Lax') as 'Strict' | 'None' | 'Lax',
             }));
 
             await this.context.addCookies(cookies);
             await this.context.setExtraHTTPHeaders({
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
             });
             this.log('Browser connected with stealth and cookies injected.');
+            this._connected = true;
         } catch (error) {
             this.log(`Error during connect: ${error}`);
             throw error;
@@ -65,7 +99,8 @@ export class FacebookPlaywrightAdapter implements IAdapter {
         } finally {
             this.browser = null;
             this.context = null;
-            this.page = null;
+            this._page = null;
+            this._connected = false;
         }
     }
 
@@ -74,10 +109,10 @@ export class FacebookPlaywrightAdapter implements IAdapter {
     }
 
     async sendMessage(to: string, message: string): Promise<{ success: boolean; error?: string; code?: string }> {
-        if (!this.page) throw new Error('Browser not connected');
+        if (!this._page) throw new Error('Browser not connected');
         try {
-            await this.page.goto(`https://www.facebook.com/messages/t/${to}`, { waitUntil: 'domcontentloaded' });
-            const textBox = await this.page.waitForSelector('div[role="textbox"][contenteditable="true"]');
+            await this._page.goto(`https://www.facebook.com/messages/t/${to}`, { waitUntil: 'domcontentloaded' });
+            const textBox = await this._page.waitForSelector('div[role="textbox"][contenteditable="true"]');
 
             if (!textBox) throw new Error('Could not find message input box');
 
@@ -97,12 +132,12 @@ export class FacebookPlaywrightAdapter implements IAdapter {
     }
 
     async commentOnPost(postUrl: string, commentText: string): Promise<boolean> {
-        if (!this.page) throw new Error('Browser not connected');
+        if (!this._page) throw new Error('Browser not connected');
         try {
-            await this.page.goto(postUrl, { waitUntil: 'domcontentloaded' });
-            await this.page.waitForTimeout(3000);
+            await this._page.goto(postUrl, { waitUntil: 'domcontentloaded' });
+            await this._page.waitForTimeout(3000);
 
-            const textBox = await this.page.waitForSelector('div[role="textbox"][contenteditable="true"]');
+            const textBox = await this._page.waitForSelector('div[role="textbox"][contenteditable="true"]');
             if (!textBox) throw new Error('Comment box not found');
 
             await textBox.fill(commentText);
@@ -120,22 +155,22 @@ export class FacebookPlaywrightAdapter implements IAdapter {
     }
 
     async checkUnreadDMsAndReply(replyMsg: string): Promise<number> {
-        if (!this.page) throw new Error('Browser not connected');
+        if (!this._page) throw new Error('Browser not connected');
         try {
-            await this.page.goto('https://www.facebook.com/messages/t/', { waitUntil: 'domcontentloaded' });
-            const unreadThreads = await this.page.$$('div[aria-label*="Unread"]');
+            await this._page.goto('https://www.facebook.com/messages/t/', { waitUntil: 'domcontentloaded' });
+            const unreadThreads = await this._page.$$('div[aria-label*="Unread"]');
 
             let replyCount = 0;
             for (const thread of unreadThreads) {
                 await thread.click();
-                await this.page.waitForTimeout(2000);
+                await this._page.waitForTimeout(2000);
 
-                const textBox = await this.page.waitForSelector('div[role="textbox"][contenteditable="true"]');
+                const textBox = await this._page.waitForSelector('div[role="textbox"][contenteditable="true"]');
                 if (textBox) {
                     await textBox.fill(replyMsg);
                     await textBox.press('Enter');
                     replyCount++;
-                    await this.page.waitForTimeout(1000);
+                    await this._page.waitForTimeout(1000);
                 }
             }
             this.log(`Replied to ${replyCount} unread threads.`);

@@ -57,7 +57,7 @@ export class FacebookAdapter implements IAdapter {
       headers: {
         Cookie: this.cookieHeader,
         'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
         'Upgrade-Insecure-Requests': '1',
@@ -150,7 +150,7 @@ export class FacebookAdapter implements IAdapter {
         headers: {
           Cookie: this.cookieHeader,
           'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
           'Content-Type': 'application/x-www-form-urlencoded',
           Accept: '*/*',
           Origin: 'https://www.facebook.com',

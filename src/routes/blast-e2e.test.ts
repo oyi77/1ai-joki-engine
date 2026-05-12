@@ -56,6 +56,15 @@ vi.mock('../utils/crypto', () => ({
 vi.mock('../adapters/providers/meta/facebook/facebook-finder', () => ({
   findFacebookTargets: vi.fn().mockResolvedValue({ postIds: ['post1'], userIds: [] })
 }))
+vi.mock('../blast/actions/facebook-adapter-cache', () => ({
+  getFacebookAdapter: vi.fn().mockReturnValue({
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    commentOnPost: vi.fn().mockResolvedValue(true),
+    sendMessage: vi.fn().mockResolvedValue({ success: true }),
+  }),
+  disconnectFacebookAdapter: vi.fn(),
+}))
 
 describe('Blast E2E', () => {
   let server: http.Server

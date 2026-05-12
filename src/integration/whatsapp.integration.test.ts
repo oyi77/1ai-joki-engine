@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { WhatsAppAdapter } from '../adapters/providers/meta/whatsapp/whatsapp'
+import { WhatsAppAdapter } from '../adapters/providers/meta/Whatsapp/whatsapp'
 
 const TARGET_NUMBER = process.env.TEST_WHATSAPP_TARGET_NUMBER ?? ''
 const SKIP_REASON: string[] = []
