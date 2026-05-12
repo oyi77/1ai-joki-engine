@@ -1,0 +1,60 @@
+import { FacebookPlaywrightAdapter } from '../../adapters/providers/meta/facebook/facebook-playwright'
+import { createHash } from 'crypto'
+
+interface CachedAdapter {
+    adapter: FacebookPlaywrightAdapter
+    lastUsed: number
+}
+
+const ADAPTER_TTL_MS = 3 * 60 * 1000
+
+const cache = new Map<string, CachedAdapter>()
+
+function cacheKey(cookie: string): string {
+    return createHash('sha256').update(cookie.slice(0, 100)).digest('hex')
+}
+
+export function getFacebookAdapter(
+    cookie: string,
+    opts?: { logger?: (msg: string) => void }
+): FacebookPlaywrightAdapter {
+    const key = cacheKey(cookie)
+    const cached = cache.get(key)
+
+    if (cached && Date.now() - cached.lastUsed < ADAPTER_TTL_MS) {
+        cached.lastUsed = Date.now()
+        return cached.adapter
+    }
+
+    if (cached) {
+        cached.adapter.disconnect().catch(() => {})
+        cache.delete(key)
+    }
+
+    const adapter = new FacebookPlaywrightAdapter(cookie, {
+        headless: true,
+        logger: opts?.logger,
+    })
+    cache.set(key, { adapter, lastUsed: Date.now() })
+    return adapter
+}
+
+export async function disconnectFacebookAdapter(cookie: string): Promise<void> {
+    const key = cacheKey(cookie)
+    const cached = cache.get(key)
+    if (!cached) return
+    try {
+        await cached.adapter.disconnect()
+    } catch {}
+    cache.delete(key)
+}
+
+setInterval(() => {
+    const now = Date.now()
+    for (const [key, cached] of cache.entries()) {
+        if (now - cached.lastUsed > ADAPTER_TTL_MS) {
+            cached.adapter.disconnect().catch(() => {})
+            cache.delete(key)
+        }
+    }
+}, ADAPTER_TTL_MS)
