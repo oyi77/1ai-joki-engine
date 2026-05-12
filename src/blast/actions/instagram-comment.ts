@@ -29,21 +29,23 @@ export async function instagramPostComment(
   const csrfToken = csrfMatch?.[1] ?? ''
   try {
     const client = createHttpClient({
-      baseURL: 'https://www.instagram.com',
+      baseURL: 'https://i.instagram.com',
       timeout: 15_000,
       headers: {
         Cookie: cookieHeader,
         'X-CSRFToken': csrfToken,
-        'X-IG-App-ID': '936619743392459',
+        'X-IG-App-ID': '303070000',
+        'X-IG-Device-ID': 'ig-' + Math.random().toString(36).slice(2, 18),
+        'X-IG-Connection-Type': 'WIFI',
         'Content-Type': 'application/x-www-form-urlencoded',
         'User-Agent':
-          'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Instagram 303.0.0.11.109',
+          'Instagram 303.0.0.11.109 Android (27/8.1.0; 480dpi; 1080x1920; samsung; SM-G9550; heroqlte; en_US; 511506453)',
       },
     })
     const params = new URLSearchParams({ comment_text: message })
     const res = await client.post(`/api/v1/media/${postId}/comment/`, params.toString())
-    const ok = res?.data?.status === 'ok' || res?.status === 200
-    return { success: ok, error: ok ? undefined : 'IG comment failed' }
+    const ok = res?.data?.status === 'ok'
+    return { success: ok, error: ok ? undefined : res?.data?.message ?? 'IG comment failed' }
   } catch (e: any) {
     return { success: false, error: e?.message ?? 'IG comment error' }
   }

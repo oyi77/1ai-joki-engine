@@ -51,6 +51,7 @@ export class ThreadsCookieAdapter implements IAdapter {
     _to: string,
     message: string
   ): Promise<{ success: boolean; error?: string; code?: string }> {
+    if (!message.trim()) return { success: false, error: 'Message not provided', code: 'INVALID_INPUT' }
     if (!this.cookieHeader) await this.connect()
     this.maybeDrainRate()
     if (this.rateRemaining <= 0) {
@@ -58,15 +59,17 @@ export class ThreadsCookieAdapter implements IAdapter {
     }
     try {
       const client = createHttpClient({
-        baseURL: 'https://www.threads.net',
+        baseURL: 'https://i.instagram.com',
         timeout: 15_000,
         headers: {
           Cookie: this.cookieHeader,
           'X-CSRFToken': this.csrfToken,
-          'X-IG-App-ID': '238260118697367', // Threads app ID
+          'X-IG-App-ID': '303070000',
+          'X-IG-Device-ID': 'ig-' + Math.random().toString(36).slice(2, 18),
+          'X-IG-Connection-Type': 'WIFI',
           'Content-Type': 'application/x-www-form-urlencoded',
           'User-Agent':
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Instagram 303.0.0.11.109',
+            'Instagram 303.0.0.11.109 Android (27/8.1.0; 480dpi; 1080x1920; samsung; SM-G9550; heroqlte; en_US; 511506453)',
         },
       })
       const params = new URLSearchParams({
@@ -79,7 +82,7 @@ export class ThreadsCookieAdapter implements IAdapter {
         '/api/v1/media/configure_text_post_app_feed/',
         params.toString()
       )
-      const ok = res?.data?.status === 'ok' || res?.status === 200
+      const ok = res?.data?.status === 'ok'
       this.log(`Post result: ${res?.data?.status}`)
       return { success: ok, code: ok ? undefined : 'THREADS_COOKIE_POST_ERROR' }
     } catch (e: any) {
@@ -100,6 +103,7 @@ export class ThreadsCookieAdapter implements IAdapter {
     to: string,
     message: string
   ): Promise<{ success: boolean; error?: string; code?: string }> {
+    if (!message.trim()) return { success: false, error: 'Message not provided', code: 'INVALID_INPUT' }
     if (!this.cookieHeader) await this.connect()
     this.maybeDrainRate()
     if (this.rateRemaining <= 0) {
@@ -107,15 +111,17 @@ export class ThreadsCookieAdapter implements IAdapter {
     }
     try {
       const client = createHttpClient({
-        baseURL: 'https://www.threads.net',
+        baseURL: 'https://i.instagram.com',
         timeout: 15_000,
         headers: {
           Cookie: this.cookieHeader,
           'X-CSRFToken': this.csrfToken,
-          'X-IG-App-ID': '238260118697367',
+          'X-IG-App-ID': '303070000',
+          'X-IG-Device-ID': 'ig-' + Math.random().toString(36).slice(2, 18),
+          'X-IG-Connection-Type': 'WIFI',
           'Content-Type': 'application/x-www-form-urlencoded',
           'User-Agent':
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Instagram 303.0.0.11.109',
+            'Instagram 303.0.0.11.109 Android (27/8.1.0; 480dpi; 1080x1920; samsung; SM-G9550; heroqlte; en_US; 511506453)',
         },
       })
       const params = new URLSearchParams({
@@ -128,7 +134,7 @@ export class ThreadsCookieAdapter implements IAdapter {
         '/api/v1/media/configure_text_post_app_feed/',
         params.toString()
       )
-      const ok = res?.data?.status === 'ok' || res?.status === 200
+      const ok = res?.data?.status === 'ok'
       this.log(`Reply result: ${res?.data?.status}`)
       return { success: ok, code: ok ? undefined : 'THREADS_COOKIE_REPLY_ERROR' }
     } catch (e: unknown) {

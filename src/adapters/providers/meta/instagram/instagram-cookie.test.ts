@@ -32,7 +32,7 @@ describe('InstagramCookieAdapter', () => {
     const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     const res = await adapter.sendMessage('unused', 'Hello IG!');
     expect(res.success).toBe(true);
-    expect(mockPost).toHaveBeenCalledWith('/api/v1/media/configure/', expect.any(String));
+    expect(mockPost).toHaveBeenCalledWith('/api/v1/media/configure_text_post_reshare/', expect.any(String));
   });
 
   test('sendMessage returns failure on HTTP error', async () => {

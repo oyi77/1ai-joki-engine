@@ -58,15 +58,17 @@ export class InstagramCookieAdapter implements IAdapter {
     }
     try {
       const client = createHttpClient({
-        baseURL: 'https://www.instagram.com',
+        baseURL: 'https://i.instagram.com',
         timeout: 15_000,
         headers: {
           Cookie: this.cookieHeader,
           'X-CSRFToken': this.extractCsrf(),
-          'X-IG-App-ID': '936619743392459',
+          'X-IG-App-ID': '303070000',
+          'X-IG-Device-ID': 'ig-' + Math.random().toString(36).slice(2, 18),
+          'X-IG-Connection-Type': 'WIFI',
           'Content-Type': 'application/x-www-form-urlencoded',
           'User-Agent':
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 303.0.0.11.109',
+            'Instagram 303.0.0.11.109 Android (27/8.1.0; 480dpi; 1080x1920; samsung; SM-G9550; heroqlte; en_US; 511506453)',
         },
       })
       const params = new URLSearchParams({
@@ -74,8 +76,8 @@ export class InstagramCookieAdapter implements IAdapter {
         media_type: '1',
         upload_id: String(Date.now()),
       })
-      const res = await client.post('/api/v1/media/configure/', params.toString())
-      const ok = res?.data?.status === 'ok' || res?.status === 200
+      const res = await client.post('/api/v1/media/configure_text_post_reshare/', params.toString())
+      const ok = res?.data?.status === 'ok'
       this.log(`Post result: ${res?.data?.status}`)
       return { success: ok, code: ok ? undefined : 'IG_COOKIE_POST_ERROR' }
     } catch (e: unknown) {
@@ -104,20 +106,22 @@ export class InstagramCookieAdapter implements IAdapter {
     }
     try {
       const client = createHttpClient({
-        baseURL: 'https://www.instagram.com',
+        baseURL: 'https://i.instagram.com',
         timeout: 15_000,
         headers: {
           Cookie: this.cookieHeader,
           'X-CSRFToken': this.extractCsrf(),
-          'X-IG-App-ID': '936619743392459',
+          'X-IG-App-ID': '303070000',
+          'X-IG-Device-ID': 'ig-' + Math.random().toString(36).slice(2, 18),
+          'X-IG-Connection-Type': 'WIFI',
           'Content-Type': 'application/x-www-form-urlencoded',
           'User-Agent':
-            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 303.0.0.11.109',
+            'Instagram 303.0.0.11.109 Android (27/8.1.0; 480dpi; 1080x1920; samsung; SM-G9550; heroqlte; en_US; 511506453)',
         },
       })
       const params = new URLSearchParams({ comment_text: message })
       const res = await client.post(`/api/v1/media/${to}/comment/`, params.toString())
-      const ok = res?.data?.status === 'ok' || res?.status === 200
+      const ok = res?.data?.status === 'ok'
       return { success: ok, code: ok ? undefined : 'IG_COOKIE_REPLY_ERROR' }
     } catch (e: unknown) {
       return {

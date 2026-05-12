@@ -80,9 +80,18 @@ describe('ThreadsCookieAdapter', () => {
     expect(res.code).toBe('THREADS_COOKIE_REPLY_ERROR');
   });
 
-  test('getRateLimitStatus returns expected shape', async () => {
+test('getRateLimitStatus returns expected shape', async () => {
     const adapter = makeAdapter();
     const status = await adapter.getRateLimitStatus();
+    expect(status).not.toBeNull();
     expect(status!.limit).toBe(30);
+    expect(typeof status!.remaining).toBe('number');
+  });
+
+  test('sendMessage validation — empty message', async () => {
+    const adapter = makeAdapter();
+    const res = await adapter.sendMessage('unused', '');
+    expect(res.success).toBe(false);
+    expect(res.error).toMatch(/not provided/i);
   });
 });
