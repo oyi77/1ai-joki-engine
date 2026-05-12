@@ -79,7 +79,8 @@ export class InstagramCookieAdapter implements IAdapter {
       const res = await client.post('/api/v1/media/configure_text_post_reshare/', params.toString())
       const ok = res?.data?.status === 'ok'
       this.log(`Post result: ${res?.data?.status}`)
-      return { success: ok, code: ok ? undefined : 'IG_COOKIE_POST_ERROR' }
+      const msg = res?.data?.message
+    return { success: ok, error: ok ? undefined : msg, code: ok ? undefined : 'IG_COOKIE_POST_ERROR' }
     } catch (e: unknown) {
       return {
         success: false,
@@ -122,7 +123,7 @@ export class InstagramCookieAdapter implements IAdapter {
       const params = new URLSearchParams({ comment_text: message })
       const res = await client.post(`/api/v1/media/${to}/comment/`, params.toString())
       const ok = res?.data?.status === 'ok'
-      return { success: ok, code: ok ? undefined : 'IG_COOKIE_REPLY_ERROR' }
+      return { success: ok, error: ok ? undefined : res?.data?.message, code: ok ? undefined : 'IG_COOKIE_REPLY_ERROR' }
     } catch (e: unknown) {
       return {
         success: false,

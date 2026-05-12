@@ -84,7 +84,7 @@ export class ThreadsCookieAdapter implements IAdapter {
       )
       const ok = res?.data?.status === 'ok'
       this.log(`Post result: ${res?.data?.status}`)
-      return { success: ok, code: ok ? undefined : 'THREADS_COOKIE_POST_ERROR' }
+      return { success: ok, error: ok ? undefined : res?.data?.message, code: ok ? undefined : 'THREADS_COOKIE_POST_ERROR' }
     } catch (e: any) {
       return {
         success: false,
@@ -136,7 +136,7 @@ export class ThreadsCookieAdapter implements IAdapter {
       )
       const ok = res?.data?.status === 'ok'
       this.log(`Reply result: ${res?.data?.status}`)
-      return { success: ok, code: ok ? undefined : 'THREADS_COOKIE_REPLY_ERROR' }
+      return { success: ok, error: ok ? undefined : res?.data?.message, code: ok ? undefined : 'THREADS_COOKIE_REPLY_ERROR' }
     } catch (e: unknown) {
       return {
         success: false,

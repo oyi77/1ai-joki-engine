@@ -45,7 +45,8 @@ export async function instagramPostComment(
     const params = new URLSearchParams({ comment_text: message })
     const res = await client.post(`/api/v1/media/${postId}/comment/`, params.toString())
     const ok = res?.data?.status === 'ok'
-    return { success: ok, error: ok ? undefined : res?.data?.message ?? 'IG comment failed' }
+    const errMsg = res?.data?.message || res?.statusText
+    return { success: ok, error: ok ? undefined : errMsg }
   } catch (e: any) {
     return { success: false, error: e?.message ?? 'IG comment error' }
   }
