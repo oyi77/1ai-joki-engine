@@ -94,4 +94,23 @@ test('getRateLimitStatus returns expected shape', async () => {
     expect(res.success).toBe(false);
     expect(res.error).toMatch(/not provided/i);
   });
+
+  test('sendMessage detects rate limit / challenge required via 401', async () => {
+    const mockPost = vi.fn().mockResolvedValue({ status: 401, data: { status: 'fail', message: 'Please wait' } });
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
+    const adapter = makeAdapter();
+    const res = await adapter.sendMessage('unused', 'test');
+    expect(res.success).toBe(false);
+    expect(res.code).toBe('IG_BLOCKED');
+    expect(res.error).toContain('Rate limited');
+  });
+
+  test('replyToMessage detects anti-automation block (4415001)', async () => {
+    const mockPost = vi.fn().mockResolvedValue({ status: 400, data: { status: 'fail', content: { error_code: 4415001 } } });
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
+    const adapter = makeAdapter();
+    const res = await adapter.replyToMessage('post_123', 'test');
+    expect(res.success).toBe(false);
+    expect(res.code).toBe('IG_BLOCKED');
+  });
 });

@@ -1,18 +1,11 @@
 import type { IAdapter, RateLimitStatus } from '../../../IAdapter'
 import { createHttpClient, parseCookies } from '../../../../utils/http-client'
 
-/**
- * InstagramCookieAdapter
- *
- * Posts to Instagram using browser session cookies.
- * Cookies are passed as a string (plain "k=v; k2=v2") or JSON array
- * ([{"name":"k","value":"v"}]) — stored encrypted in the `accounts` table.
- *
- * This adapter calls Instagram's internal API endpoints, which don't require
- * an official access token. Use it for personal accounts without Graph API.
- *
- * IMPORTANT: Ensure you are compliant with Instagram's Terms of Service.
- */
+const IG_ANDROID_UA =
+  'Instagram 303.0.0.11.109 Android (27/8.1.0; 480dpi; 1080x1920; samsung; SM-G9550; heroqlte; en_US; 511506453)'
+const IG_APP_ID = '303070000'
+const IG_BASE_URL = 'https://i.instagram.com'
+
 export class InstagramCookieAdapter implements IAdapter {
   private cookieHeader: string = ''
   private logger?: (msg: string) => void
@@ -41,11 +34,28 @@ export class InstagramCookieAdapter implements IAdapter {
     this.log('Disconnected')
   }
 
-  /**
-   * Create a text-only Instagram post using the internal create endpoint.
-   * @param _to  Unused (Instagram posts are to the authenticated user's feed)
-   * @param message  Caption / post text
-   */
+  private webHeaders(extra?: Record<string, string>): Record<string, string> {
+    return {
+      Cookie: this.cookieHeader,
+      'X-CSRFToken': this.extractCsrf(),
+      'X-IG-App-ID': IG_APP_ID,
+      'X-IG-Device-ID': this.extractIgDid(),
+      'X-IG-Connection-Type': 'WIFI',
+      'Accept-Language': 'en-US',
+      Accept: '*/*',
+      'User-Agent': IG_ANDROID_UA,
+      ...extra,
+    }
+  }
+
+  private checkBlocked(res: { status: number; data?: any }): string | null {
+    if (res.status === 401) return 'Rate limited or challenge required — wait before retrying'
+    const content = res.data?.content
+    if (content?.error_code === 4415001) return 'Anti-automation block — session flagged as automated'
+    if (res.data?.status === 'fail' && res.data?.message === 'login_required') return 'Cookie expired — login required'
+    return null
+  }
+
   async sendMessage(
     _to: string,
     message: string
@@ -58,29 +68,21 @@ export class InstagramCookieAdapter implements IAdapter {
     }
     try {
       const client = createHttpClient({
-        baseURL: 'https://i.instagram.com',
+        baseURL: IG_BASE_URL,
         timeout: 15_000,
-        headers: {
-          Cookie: this.cookieHeader,
-          'X-CSRFToken': this.extractCsrf(),
-          'X-IG-App-ID': '303070000',
-          'X-IG-Device-ID': 'ig-' + Math.random().toString(36).slice(2, 18),
-          'X-IG-Connection-Type': 'WIFI',
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent':
-            'Instagram 303.0.0.11.109 Android (27/8.1.0; 480dpi; 1080x1920; samsung; SM-G9550; heroqlte; en_US; 511506453)',
-        },
+        headers: this.webHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
       })
       const params = new URLSearchParams({
         caption: message,
         media_type: '1',
         upload_id: String(Date.now()),
       })
-      const res = await client.post('/api/v1/media/configure_text_post_reshare/', params.toString())
+      const res = await client.post('/api/v1/media/configure/', params.toString())
+      const blocked = this.checkBlocked({ status: res?.status ?? 0, data: res?.data })
+      if (blocked) return { success: false, error: blocked, code: 'IG_BLOCKED' }
       const ok = res?.data?.status === 'ok'
       this.log(`Post result: ${res?.data?.status}`)
-      const msg = res?.data?.message
-    return { success: ok, error: ok ? undefined : msg, code: ok ? undefined : 'IG_COOKIE_POST_ERROR' }
+      return { success: ok, error: ok ? undefined : res?.data?.message, code: ok ? undefined : 'IG_COOKIE_POST_ERROR' }
     } catch (e: unknown) {
       return {
         success: false,
@@ -90,11 +92,6 @@ export class InstagramCookieAdapter implements IAdapter {
     }
   }
 
-  /**
-   * Reply to a comment/media item.
-   * @param to  Media or comment ID to reply to
-   * @param message  Reply text
-   */
   async replyToMessage(
     to: string,
     message: string
@@ -107,21 +104,14 @@ export class InstagramCookieAdapter implements IAdapter {
     }
     try {
       const client = createHttpClient({
-        baseURL: 'https://i.instagram.com',
+        baseURL: IG_BASE_URL,
         timeout: 15_000,
-        headers: {
-          Cookie: this.cookieHeader,
-          'X-CSRFToken': this.extractCsrf(),
-          'X-IG-App-ID': '303070000',
-          'X-IG-Device-ID': 'ig-' + Math.random().toString(36).slice(2, 18),
-          'X-IG-Connection-Type': 'WIFI',
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent':
-            'Instagram 303.0.0.11.109 Android (27/8.1.0; 480dpi; 1080x1920; samsung; SM-G9550; heroqlte; en_US; 511506453)',
-        },
+        headers: this.webHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
       })
       const params = new URLSearchParams({ comment_text: message })
       const res = await client.post(`/api/v1/media/${to}/comment/`, params.toString())
+      const blocked = this.checkBlocked({ status: res?.status ?? 0, data: res?.data })
+      if (blocked) return { success: false, error: blocked, code: 'IG_BLOCKED' }
       const ok = res?.data?.status === 'ok'
       return { success: ok, error: ok ? undefined : res?.data?.message, code: ok ? undefined : 'IG_COOKIE_REPLY_ERROR' }
     } catch (e: unknown) {
@@ -141,6 +131,11 @@ export class InstagramCookieAdapter implements IAdapter {
   private extractCsrf(): string {
     const match = this.cookieHeader.match(/csrftoken=([^;]+)/)
     return match?.[1] ?? ''
+  }
+
+  private extractIgDid(): string {
+    const match = this.cookieHeader.match(/ig_did=([^;]+)/)
+    return match?.[1] ?? 'ig-' + Math.random().toString(36).slice(2, 18)
   }
 
   private maybeDrainRate() {

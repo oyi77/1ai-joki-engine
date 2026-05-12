@@ -32,7 +32,7 @@ describe('InstagramCookieAdapter', () => {
     const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     const res = await adapter.sendMessage('unused', 'Hello IG!');
     expect(res.success).toBe(true);
-    expect(mockPost).toHaveBeenCalledWith('/api/v1/media/configure_text_post_reshare/', expect.any(String));
+    expect(mockPost).toHaveBeenCalledWith('/api/v1/media/configure/', expect.any(String));
   });
 
   test('sendMessage returns failure on HTTP error', async () => {
@@ -71,5 +71,34 @@ describe('InstagramCookieAdapter', () => {
     await adapter.disconnect();
     const res = await adapter.sendMessage('unused', 're-connect test');
     expect(res.success).toBe(true);
+  });
+
+  test('sendMessage detects rate limit / challenge required via 401', async () => {
+    const mockPost = vi.fn().mockResolvedValue({ status: 401, data: { status: 'fail', message: 'Please wait a few minutes' } });
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
+    const res = await adapter.sendMessage('unused', 'test');
+    expect(res.success).toBe(false);
+    expect(res.code).toBe('IG_BLOCKED');
+    expect(res.error).toContain('Rate limited');
+  });
+
+  test('sendMessage detects anti-automation block (4415001)', async () => {
+    const mockPost = vi.fn().mockResolvedValue({ status: 400, data: { status: 'fail', content: { error_code: 4415001 } } });
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
+    const res = await adapter.sendMessage('unused', 'test');
+    expect(res.success).toBe(false);
+    expect(res.code).toBe('IG_BLOCKED');
+    expect(res.error).toContain('Anti-automation');
+  });
+
+  test('replyToMessage detects login_required', async () => {
+    const mockPost = vi.fn().mockResolvedValue({ status: 403, data: { status: 'fail', message: 'login_required' } });
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
+    const res = await adapter.replyToMessage('media_123', 'test');
+    expect(res.success).toBe(false);
+    expect(res.code).toBe('IG_BLOCKED');
   });
 });
