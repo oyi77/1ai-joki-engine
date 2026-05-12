@@ -7,13 +7,22 @@ import { initSqlJsDatabase, closeDatabase, runMigrations } from './src/db/sqlite
 (globalThis as any).jest = vi;
 
 vi.mock('axios', () => {
-  const mock = {
-    post: vi.fn(),
-    get: vi.fn(),
-    default: undefined as any,
-  };
-  mock.default = mock;
-  return mock;
+  const instance = {
+    post: vi.fn().mockResolvedValue({ data: { status: 'ok' }, status: 200 }),
+    get: vi.fn().mockResolvedValue({ data: {}, status: 200 }),
+    put: vi.fn().mockResolvedValue({ data: { status: 'ok' }, status: 200 }),
+    patch: vi.fn().mockResolvedValue({ data: { status: 'ok' }, status: 200 }),
+    delete: vi.fn().mockResolvedValue({ data: {}, status: 200 }),
+    request: vi.fn().mockResolvedValue({ data: { status: 'ok' }, status: 200 }),
+    interceptors: { request: { use: vi.fn(), eject: vi.fn() }, response: { use: vi.fn(), eject: vi.fn() } },
+    defaults: {},
+    create: vi.fn(() => instance),
+  }
+  return {
+    __esModule: true,
+    default: instance,
+    create: vi.fn(() => instance),
+  }
 });
 
 let tempDbPath = path.resolve(process.cwd(), 'data', 'test.db');

@@ -1,35 +1,23 @@
-// Unit tests for InstagramCookieAdapter — mocks axios
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { InstagramCookieAdapter } from './instagram-cookie';
+import { createHttpClient } from '../../../../utils/http-client';
 
-vi.mock('axios', () => {
-  const instance = {
-    post: vi.fn(),
+vi.mock('../../../../utils/http-client', () => ({
+  createHttpClient: vi.fn(() => ({
+    post: vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } }),
     get: vi.fn(),
-    interceptors: { request: { use: vi.fn() }, response: { use: vi.fn() } },
-  };
-  return { default: { create: vi.fn(() => instance), ...instance }, __esModule: true };
-});
-
-import axios from 'axios';
-const mockedAxios = axios as any;
-
-function makeAdapter(cookie = 'sessionid=abc; csrftoken=tok') {
-  return new InstagramCookieAdapter(cookie);
-}
+  })),
+  parseCookies: vi.fn((s: string) => s),
+  default: { create: vi.fn() },
+}));
 
 describe('InstagramCookieAdapter', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    // Default mock for axios.create() to return a post/get mock
-    mockedAxios.create.mockReturnValue({
-      post: vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } }),
-      get: vi.fn(),
-    });
-  });
+    vi.clearAllMocks()
+  })
 
   test('connect parses cookies', async () => {
-    const adapter = makeAdapter();
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     await expect(adapter.connect()).resolves.toBeUndefined();
   });
 
@@ -40,17 +28,19 @@ describe('InstagramCookieAdapter', () => {
 
   test('sendMessage calls internal configure endpoint and returns success', async () => {
     const mockPost = vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } });
-    mockedAxios.create.mockReturnValue({ post: mockPost });
-    const adapter = makeAdapter();
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     const res = await adapter.sendMessage('unused', 'Hello IG!');
     expect(res.success).toBe(true);
     expect(mockPost).toHaveBeenCalledWith('/api/v1/media/configure/', expect.any(String));
   });
 
   test('sendMessage returns failure on HTTP error', async () => {
-    const mockPost = vi.fn().mockRejectedValue(new Error('Network Error'));
-    mockedAxios.create.mockReturnValue({ post: mockPost });
-    const adapter = makeAdapter();
+    vi.mocked(createHttpClient).mockReturnValue({
+      post: vi.fn().mockRejectedValue(new Error('Network Error')),
+      get: vi.fn(),
+    } as any);
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     const res = await adapter.sendMessage('unused', 'fail');
     expect(res.success).toBe(false);
     expect(res.code).toBe('IG_COOKIE_POST_ERROR');
@@ -58,15 +48,15 @@ describe('InstagramCookieAdapter', () => {
 
   test('replyToMessage calls comment endpoint', async () => {
     const mockPost = vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } });
-    mockedAxios.create.mockReturnValue({ post: mockPost });
-    const adapter = makeAdapter();
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     const res = await adapter.replyToMessage('media_123', 'Nice post!');
     expect(res.success).toBe(true);
     expect(mockPost).toHaveBeenCalledWith('/api/v1/media/media_123/comment/', expect.any(String));
   });
 
   test('getRateLimitStatus returns expected shape', async () => {
-    const adapter = makeAdapter();
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     const status = await adapter.getRateLimitStatus();
     expect(status).not.toBeNull();
     expect(status!.limit).toBe(30);
@@ -74,12 +64,11 @@ describe('InstagramCookieAdapter', () => {
   });
 
   test('disconnect clears cookie', async () => {
-    const adapter = makeAdapter();
+    const mockPost = vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } });
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
+    const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     await adapter.connect();
     await adapter.disconnect();
-    // After disconnect, sendMessage should reconnect (no throw, just handled)
-    const mockPost = vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } });
-    mockedAxios.create.mockReturnValue({ post: mockPost });
     const res = await adapter.sendMessage('unused', 're-connect test');
     expect(res.success).toBe(true);
   });

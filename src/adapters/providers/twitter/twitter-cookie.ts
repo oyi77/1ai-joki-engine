@@ -51,6 +51,7 @@ export class TwitterCookieAdapter implements IAdapter {
     _to: string,
     message: string
   ): Promise<{ success: boolean; error?: string; code?: string }> {
+    if (!message.trim()) return { success: false, error: 'Message not provided', code: 'INVALID_INPUT' }
     if (!this.cookieHeader) await this.connect()
     this.maybeDrainRate()
     if (this.rateRemaining <= 0) {

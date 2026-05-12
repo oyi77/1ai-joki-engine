@@ -1,18 +1,15 @@
-// Unit tests for ThreadsCookieAdapter — mocks axios
 import { describe, test, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { ThreadsCookieAdapter } from './threads-cookie';
+import { createHttpClient } from '../../../../utils/http-client';
 
-vi.mock('axios', () => {
-  const instance = {
+vi.mock('../../../../utils/http-client', () => ({
+  createHttpClient: vi.fn(() => ({
     post: vi.fn(),
     get: vi.fn(),
-    interceptors: { request: { use: vi.fn() }, response: { use: vi.fn() } },
-  };
-  return { default: { create: vi.fn(() => instance), ...instance }, __esModule: true };
-});
-
-import axios from 'axios';
-const mockedAxios = axios as any;
+  })),
+  parseCookies: vi.fn((s: string) => s),
+  default: { create: vi.fn() },
+}));
 
 function makeAdapter(cookie = 'sessionid=abc; csrftoken=ctoken') {
   return new ThreadsCookieAdapter(cookie);
@@ -20,10 +17,11 @@ function makeAdapter(cookie = 'sessionid=abc; csrftoken=ctoken') {
 
 describe('ThreadsCookieAdapter', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockedAxios.create.mockReturnValue({
+    vi.clearAllMocks()
+    vi.mocked(createHttpClient).mockReturnValue({
       post: vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } }),
-    });
+      get: vi.fn(),
+    } as any)
   });
 
   test('connect parses cookies', async () => {
@@ -38,7 +36,7 @@ describe('ThreadsCookieAdapter', () => {
 
   test('sendMessage calls configure_text_post_app_feed endpoint', async () => {
     const mockPost = vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } });
-    mockedAxios.create.mockReturnValue({ post: mockPost });
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
     const adapter = makeAdapter();
     const res = await adapter.sendMessage('unused', 'Hello Threads!');
     expect(res.success).toBe(true);
@@ -49,9 +47,10 @@ describe('ThreadsCookieAdapter', () => {
   });
 
   test('sendMessage returns failure on HTTP error', async () => {
-    mockedAxios.create.mockReturnValue({
+    vi.mocked(createHttpClient).mockReturnValue({
       post: vi.fn().mockRejectedValue(new Error('Network Error')),
-    });
+      get: vi.fn(),
+    } as any)
     const adapter = makeAdapter();
     const res = await adapter.sendMessage('unused', 'fail');
     expect(res.success).toBe(false);
@@ -60,7 +59,7 @@ describe('ThreadsCookieAdapter', () => {
 
   test('replyToMessage includes replied_to_id in text_post_app_info', async () => {
     const mockPost = vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } });
-    mockedAxios.create.mockReturnValue({ post: mockPost });
+    vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
     const adapter = makeAdapter();
     const res = await adapter.replyToMessage('post_456', 'Replying!');
     expect(res.success).toBe(true);
@@ -71,9 +70,10 @@ describe('ThreadsCookieAdapter', () => {
   });
 
   test('replyToMessage returns failure on HTTP error', async () => {
-    mockedAxios.create.mockReturnValue({
+    vi.mocked(createHttpClient).mockReturnValue({
       post: vi.fn().mockRejectedValue(new Error('Timeout')),
-    });
+      get: vi.fn(),
+    } as any)
     const adapter = makeAdapter();
     const res = await adapter.replyToMessage('post_789', 'fail');
     expect(res.success).toBe(false);

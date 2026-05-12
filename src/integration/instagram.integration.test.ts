@@ -54,7 +54,7 @@ describe('Instagram Live Integration Tests', () => {
     if (!result.success) {
       console.log('[Instagram] sendMessage error:', result.error, 'code:', result.code)
     }
-  })
+  }, 30_000)
 
   it('replyToMessage validation — empty message', async () => {
     const adapter = new InstagramCookieAdapter(COOKIE)

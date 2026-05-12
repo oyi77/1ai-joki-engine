@@ -10,11 +10,13 @@ export function createHttpClient(opts: {
   timeout?: number;
   headers?: Record<string, string>;
 }): AxiosInstance {
-  return axios.create({
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const axios = require('axios') as typeof import('axios')
+  return axios.default.create({
     baseURL: opts.baseURL,
     timeout: opts.timeout ?? 15_000,
     headers: opts.headers ?? {},
-  });
+  })
 }
 
 /**
