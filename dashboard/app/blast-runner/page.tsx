@@ -2,27 +2,39 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { 
+  Send, 
+  ChevronRight, 
+  ChevronLeft, 
+  Settings2, 
+  Target, 
+  Zap, 
+  ShieldCheck,
+  AlertCircle,
+  Loader2
+} from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
+import { PlatformIcon } from '@/components/ui/PlatformIcon'
+import type { PlatformName } from '@/components/ui/PlatformIcon'
+import { toast } from 'sonner'
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ??
-  process.env.NEXT_PUBLIC_API_BASE_URL ??
-  'http://127.0.0.1:3456'
+const platforms: PlatformName[] = ['facebook', 'instagram', 'threads', 'twitter', 'whatsapp', 'telegram']
 
 export default function BlastRunnerPage() {
-  const [platform, setPlatform] = useState('facebook')
+  const [step, setStep] = useState(1)
+  const [platform, setPlatform] = useState<PlatformName>('facebook')
   const [credential, setCredential] = useState('')
   const [targetSource, setTargetSource] = useState('feed')
   const [maxActions, setMaxActions] = useState(30)
   const [actionMixComment, setActionMixComment] = useState(70)
   const [delayMinSec, setDelayMinSec] = useState(20)
   const [delayMaxSec, setDelayMaxSec] = useState(40)
-  const [statusMessage, setStatusMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const isWhatsApp = platform === 'whatsapp'
 
   async function handleStartBlast() {
-    setStatusMessage('Starting blast...')
     setIsLoading(true)
 
     try {
@@ -39,8 +51,6 @@ export default function BlastRunnerPage() {
         delayMaxSec,
       }
 
-      console.log('Sending payload:', payload)
-
       const response = await fetch('/api/blast/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,153 +63,278 @@ export default function BlastRunnerPage() {
         throw new Error(data?.error ?? `Failed to start blast (${response.status})`)
       }
 
-      setStatusMessage(`Blast started successfully! ${data?.message ? `(${data.message})` : ''}`)
+      toast.success('Blast initiated successfully', {
+        description: `Your ${platform} blast has been queued.`,
+      })
+      setStep(1)
     } catch (error: unknown) {
-      console.error(error)
       const message = error instanceof Error ? error.message : 'Unknown error'
-      setStatusMessage(`Error: ${message}`)
+      toast.error('Failed to start blast', {
+        description: message,
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
+  const nextStep = () => setStep(s => s + 1)
+  const prevStep = () => setStep(s => s - 1)
+
   return (
-    <main className="shell">
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <h1>Blast Runner - Multi Platform</h1>
-        <Link href="/" className="button" style={{ marginTop: 0 }}>
-          Back to Dashboard
-        </Link>
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-100">Blast Runner</h1>
+          <p className="text-slate-500 mt-1">Configure and launch a multi-platform automation session.</p>
+        </div>
+        <div className="flex items-center gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
+          {[1, 2, 3].map((s) => (
+            <div 
+              key={s}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300
+                ${step === s ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 
+                  step > s ? 'bg-emerald-500/20 text-emerald-400' : 'text-slate-600'}
+              `}
+            >
+              {s}
+            </div>
+          ))}
+        </div>
       </div>
 
-      <section className="card" style={{ maxWidth: '800px' }}>
-        <h2>Configure Blast</h2>
-        
-        <label>Platform</label>
-        <select 
-          className="select" 
-          value={platform} 
-          onChange={(e) => {
-            setPlatform(e.target.value)
-            // Reset to default action mix when changing platform
-            if (e.target.value === 'whatsapp') {
-              setActionMixComment(0) // WhatsApp is 100% chat usually
-            } else {
-              setActionMixComment(70)
-            }
-          }}
-        >
-          <option value="facebook">Facebook</option>
-          <option value="instagram">Instagram</option>
-          <option value="threads">Threads</option>
-          <option value="twitter">Twitter</option>
-          <option value="whatsapp">WhatsApp</option>
-        </select>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2">
+          <Card className="border-slate-800/50 bg-slate-950/50 backdrop-blur-sm shadow-2xl">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-emerald-500/10">
+                  {step === 1 && <Settings2 className="w-5 h-5 text-emerald-400" />}
+                  {step === 2 && <Target className="w-5 h-5 text-emerald-400" />}
+                  {step === 3 && <ShieldCheck className="w-5 h-5 text-emerald-400" />}
+                </div>
+                <div>
+                  <CardTitle>
+                    {step === 1 && 'Platform & Identity'}
+                    {step === 2 && 'Strategy & Targeting'}
+                    {step === 3 && 'Limits & Safety'}
+                  </CardTitle>
+                  <CardDescription>
+                    {step === 1 && 'Choose where and who will execute the blast.'}
+                    {step === 2 && 'Define your targets and action composition.'}
+                    {step === 3 && 'Configure delays and action caps for safety.'}
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6 pt-4">
+              {step === 1 && (
+                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-300">Target Platform</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {platforms.map((p) => (
+                        <button
+                          key={p}
+                          onClick={() => setPlatform(p)}
+                          className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200
+                            ${platform === p 
+                              ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-400' 
+                              : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-600'}
+                          `}
+                        >
+                          <PlatformIcon platform={p} className="w-5 h-5" />
+                          <span className="text-xs font-bold uppercase tracking-wider">{p}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-        <label>{isWhatsApp ? 'WAHA API Key / WhatsApp Credential' : 'Cookies String'}</label>
-        <textarea
-          className="textarea"
-          rows={4}
-          placeholder={isWhatsApp ? 'Enter API Key' : 'Paste full cookie string here...'}
-          value={credential}
-          onChange={(e) => setCredential(e.target.value)}
-        />
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-300">Credential / Session ID</label>
+                    <input
+                      type="text"
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                      placeholder="Enter session cookie or credential token..."
+                      value={credential}
+                      onChange={(e) => setCredential(e.target.value)}
+                    />
+                    <p className="text-[10px] text-slate-500 italic flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3" />
+                      Make sure this session is still valid in your browser.
+                    </p>
+                  </div>
+                </div>
+              )}
 
-        <label>Target Source</label>
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{ marginRight: '16px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <input 
-              type="radio" 
-              name="targetSource" 
-              value="feed" 
-              checked={targetSource === 'feed'} 
-              onChange={() => setTargetSource('feed')}
-              disabled={isWhatsApp}
-            />
-            Fetch from feed (auto)
-          </label>
-          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <input 
-              type="radio" 
-              name="targetSource" 
-              value="file" 
-              checked={targetSource === 'file'} 
-              onChange={() => setTargetSource('file')}
-            />
-            Use target file (.txt)
-          </label>
+              {step === 2 && (
+                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                  {!isWhatsApp && (
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-slate-300">Target Source</label>
+                      <select
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 appearance-none"
+                        value={targetSource}
+                        onChange={(e) => setTargetSource(e.target.value)}
+                      >
+                        <option value="feed">Home Feed (Engagement)</option>
+                        <option value="profile_followers">Followers List</option>
+                        <option value="hashtag">Hashtag Search</option>
+                        <option value="explore">Explore Page</option>
+                      </select>
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                      <label className="text-sm font-semibold text-slate-300">Action Mix</label>
+                      <span className="text-xs font-mono text-emerald-400">{actionMixComment}% Comments / {100 - actionMixComment}% DMs</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="5"
+                      className="w-full accent-emerald-500 bg-slate-800 h-2 rounded-lg appearance-none cursor-pointer"
+                      value={actionMixComment}
+                      onChange={(e) => setActionMixComment(parseInt(e.target.value))}
+                    />
+                    <div className="flex justify-between text-[10px] uppercase font-bold text-slate-600 tracking-widest">
+                      <span>Pure DM</span>
+                      <span>Balanced</span>
+                      <span>Pure Comment</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-slate-300">Max Actions</label>
+                      <input
+                        type="number"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                        value={maxActions}
+                        onChange={(e) => setMaxActions(parseInt(e.target.value))}
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-slate-300">Safety Threshold</label>
+                      <div className="flex items-center gap-2 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl">
+                        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                        <span className="text-xs text-emerald-600 font-medium italic">Anti-Ban Enabled</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-sm font-semibold text-slate-300">Delay Range (Seconds)</label>
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="number"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                        placeholder="Min"
+                        value={delayMinSec}
+                        onChange={(e) => setDelayMinSec(parseInt(e.target.value))}
+                      />
+                      <span className="text-slate-600">to</span>
+                      <input
+                        type="number"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                        placeholder="Max"
+                        value={delayMaxSec}
+                        onChange={(e) => setDelayMaxSec(parseInt(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between pt-6 border-t border-slate-800/50">
+                <Button 
+                  variant="ghost" 
+                  onClick={prevStep} 
+                  disabled={step === 1 || isLoading}
+                  className={step === 1 ? 'invisible' : ''}
+                >
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+                
+                {step < 3 ? (
+                  <Button 
+                    onClick={nextStep}
+                    disabled={step === 1 && !credential}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white min-w-[120px]"
+                  >
+                    Continue
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
+                ) : (
+                  <Button 
+                    onClick={handleStartBlast} 
+                    disabled={isLoading}
+                    className="bg-gradient-to-r from-emerald-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white shadow-xl shadow-emerald-500/20 min-w-[160px]"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Launching...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4 mr-2 fill-current" />
+                        Start Blast Engine
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
-        {isWhatsApp && targetSource === 'feed' && (
-          <p className="muted" style={{ fontSize: '14px', marginTop: '-10px' }}>
-            Feed not supported for WhatsApp. Please use a target file or manually input contacts.
-          </p>
-        )}
 
-        <div className="row" style={{ marginTop: '16px' }}>
-          <div>
-            <label>Max Actions (1-50)</label>
-            <input 
-              type="number" 
-              className="input" 
-              value={maxActions} 
-              min={1} 
-              max={50}
-              onChange={(e) => setMaxActions(Number(e.target.value))} 
-            />
-          </div>
+        <div className="space-y-6">
+          <Card className="bg-slate-900/50 border-slate-800/50">
+            <CardHeader>
+              <CardTitle className="text-sm font-bold uppercase tracking-widest text-slate-400">Configuration Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <SummaryItem label="Platform" value={platform} icon={<PlatformIcon platform={platform} className="w-3 h-3" />} />
+                <SummaryItem label="Credential" value={credential ? '********' : 'Not set'} />
+                <SummaryItem label="Source" value={isWhatsApp ? 'Target File' : targetSource} />
+                <SummaryItem label="Actions" value={`${maxActions} Total`} />
+                <SummaryItem label="Composition" value={`${actionMixComment}% / ${100 - actionMixComment}%`} />
+                <SummaryItem label="Safety" value={`${delayMinSec}s - ${delayMaxSec}s delay`} />
+              </div>
+            </CardContent>
+          </Card>
 
-          <div>
-            <label>Action Mix: {actionMixComment}% Comment / {100 - actionMixComment}% Chat</label>
-            <input 
-              type="range" 
-              style={{ width: '100%', marginTop: '16px', marginBottom: '16px' }} 
-              value={actionMixComment} 
-              min={0} 
-              max={100}
-              step={10}
-              onChange={(e) => setActionMixComment(Number(e.target.value))} 
-            />
+          <div className="p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 space-y-2">
+            <div className="flex items-center gap-2 text-indigo-400">
+              <ShieldCheck className="w-4 h-4" />
+              <span className="text-xs font-bold uppercase tracking-wider">Safety Tip</span>
+            </div>
+            <p className="text-[10px] text-slate-500 leading-relaxed">
+              For Meta platforms (IG/Threads), the engine uses browser-based automation with stealth plugins. This mimics human behavior but still carries risk if frequency is too high.
+            </p>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
 
-        <div className="row">
-          <div>
-            <label>Delay Min (Seconds)</label>
-            <input 
-              type="number" 
-              className="input" 
-              value={delayMinSec} 
-              min={1}
-              onChange={(e) => setDelayMinSec(Number(e.target.value))} 
-            />
-          </div>
-          <div>
-            <label>Delay Max (Seconds)</label>
-            <input 
-              type="number" 
-              className="input" 
-              value={delayMaxSec} 
-              min={delayMinSec}
-              onChange={(e) => setDelayMaxSec(Number(e.target.value))} 
-            />
-          </div>
-        </div>
-
-        <button 
-          className="button" 
-          onClick={handleStartBlast}
-          disabled={isLoading || !credential}
-          style={{ width: '100%', marginTop: '20px', padding: '14px', fontSize: '16px', opacity: isLoading ? 0.7 : 1 }}
-        >
-          {isLoading ? 'Starting...' : 'Start Blast'}
-        </button>
-
-        {statusMessage && (
-          <div style={{ marginTop: '16px', padding: '12px', borderRadius: '8px', background: '#334155' }}>
-            <p style={{ margin: 0 }}>{statusMessage}</p>
-          </div>
-        )}
-      </section>
-    </main>
+function SummaryItem({ label, value, icon }: { label: string, value: string, icon?: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between py-1 border-b border-slate-800/50 last:border-0">
+      <span className="text-[10px] font-medium text-slate-500 uppercase tracking-tight">{label}</span>
+      <div className="flex items-center gap-1.5">
+        {icon}
+        <span className="text-xs font-bold text-slate-300 capitalize">{value}</span>
+      </div>
+    </div>
   )
 }

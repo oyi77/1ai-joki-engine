@@ -16,7 +16,7 @@ const config: Record<StatusType, { color: string; icon: typeof CheckCircle }> = 
   warning: { color: 'bg-amber-500/20 text-amber-400 border-amber-500/30', icon: AlertTriangle },
   error: { color: 'bg-red-500/20 text-red-400 border-red-500/30', icon: AlertCircle },
   info: { color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', icon: Info },
-  neutral: { color: 'bg-slate-500/20 text-slate-400 border-slate-700', icon: Circle },
+  neutral: { color: 'bg-muted text-muted-foreground border-border', icon: Circle },
 }
 
 export function StatusBadge({ status, text, showIcon = true, className = '' }: StatusBadgeProps) {

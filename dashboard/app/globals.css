@@ -1,3 +1,27 @@
+/* CSS Variable Palette for Dark Theme */
+:root {
+  --background: 0 0% 3%;
+  --foreground: 220 20% 98%;
+  --card: 220 13% 8%;
+  --card-foreground: 220 20% 98%;
+  --popover: 220 13% 8%;
+  --popover-foreground: 220 20% 98%;
+  --primary: 142 76% 36%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 262 47% 54%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 220 13% 16%;
+  --muted-foreground: 220 9% 75%;
+  --accent: 220 13% 20%;
+  --accent-foreground: 220 20% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 220 13% 20%;
+  --input: 220 13% 20%;
+  --ring: 142 76% 36%;
+  --radius: 0.75rem;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,8 +31,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 a {
@@ -28,14 +52,14 @@ a {
 }
 
 .card {
-  background: #111827;
-  border: 1px solid #334155;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
   border-radius: 14px;
   padding: 16px;
 }
 
 .muted {
-  color: #94a3b8;
+  color: hsl(var(--muted-foreground));
 }
 
 .button {
@@ -43,8 +67,8 @@ a {
   margin-top: 12px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: #22c55e;
-  color: #052e16;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
   font-weight: 700;
 }
 
@@ -55,7 +79,7 @@ a {
 
 .table td,
 .table th {
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid hsl(var(--border));
   padding: 10px;
   text-align: left;
 }
@@ -67,10 +91,10 @@ a {
   margin-top: 6px;
   margin-bottom: 12px;
   padding: 10px;
-  border: 1px solid #475569;
+  border: 1px solid hsl(var(--border));
   border-radius: 10px;
-  background: #0b1220;
-  color: #e2e8f0;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 .row {

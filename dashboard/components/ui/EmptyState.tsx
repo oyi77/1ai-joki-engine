@@ -22,13 +22,16 @@ const iconMap = {
 export function EmptyState({ icon = 'search', title, description, action, className = '' }: EmptyStateProps) {
   const Icon = iconMap[icon]
   return (
-    <div className={`flex flex-col items-center justify-center py-12 px-4 text-center ${className}`}>
-      <div className="p-4 bg-slate-800 rounded-full mb-4">
-        <Icon className="w-8 h-8 text-slate-500" />
+    <div className={`flex flex-col items-center justify-center py-8 px-4 text-center ${className}`}>
+      <div className="relative group">
+        <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-500" />
+        <div className="relative p-6 bg-card border border-primary/20 rounded-xl shadow-md">
+          <Icon className="w-14 h-14 text-primary-500 group-hover:text-primary-100 transition-colors" />
+        </div>
       </div>
-      <h3 className="text-lg font-medium text-slate-300 mb-2">{title}</h3>
-      {description && <p className="text-sm text-slate-500 mb-4 max-w-sm">{description}</p>}
-      {action}
+      <h3 className="text-2xl font-bold text-foreground mb-4">{title}</h3>
+      {description && <p className="text-sm text-muted-foreground mb-6 max-w-md leading-relaxed">{description}</p>}
+      <div className="flex flex-wrap justify-center gap-4 mt-6">{action}</div>
     </div>
   )
 }
