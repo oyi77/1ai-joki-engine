@@ -52,4 +52,14 @@ export class JobsRepo {
     const errorMessage = err instanceof Error ? err.message : String(err);
     db.prepare(`UPDATE jobs SET status = 'failed' WHERE id = ?`).run(id);
   }
+
+  markCompleted(id: string) {
+    const db = this.db ?? getDb();
+    db.prepare(`UPDATE jobs SET status = 'completed' WHERE id = ?`).run(id);
+  }
+
+  listAll(limit = 100): JobRow[] {
+    const db = this.db ?? getDb();
+    return db.prepare(`SELECT * FROM jobs ORDER BY created_at DESC LIMIT ?`).all(limit);
+  }
 }

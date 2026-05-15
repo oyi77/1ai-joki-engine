@@ -17,7 +17,7 @@ function ensureDir(dir: string): void {
 async function main(): Promise<void> {
   ensureDir(DATA_DIR);
   // Import DB helper (TypeScript via ts-node)
-  const dbModule = await import('../src/db/sqlite.js');
+  const dbModule = await import('../src/db/sqlite');
 
   let db: unknown;
   try {

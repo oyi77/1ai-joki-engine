@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { CampaignsRepo } from '../repos/campaignsRepo'
+import { JobsRepo } from '../repos/jobsRepo'
 import type { JobQueue } from '../queue/job-queue'
 import { generateTrackingToken } from '../utils/tracking'
 import { getConfig } from '../config/secrets'
@@ -103,6 +104,15 @@ export function createCampaignsRouter(queue: Pick<JobQueue, 'enqueuePostJob'>) {
            message,
            account_id: accountId,
          } as unknown as Omit<PostJob, 'id' | 'type'> & { platform: string })
+
+         // Persist to DB so dashboard GET /v1/jobs can display it
+         try {
+           const jobsRepo = new JobsRepo()
+           const db = jobsRepo['db'] ?? require('../db/sqlite').getDb()
+           db.prepare(
+             `INSERT OR IGNORE INTO jobs (id, account_id, platform, type, payload, attempts, max_attempts, status) VALUES (?, ?, ?, ?, ?, 0, 5, 'pending')`
+           ).run(jobId, accountId, platform, 'post', JSON.stringify({ message, campaign_id: campaign.id }))
+         } catch { /* non-fatal — queue still works */ }
 
          repo.addPost(campaign.id, platform, jobId)
          posts.push({ platform, job_id: jobId })

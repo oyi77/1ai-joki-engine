@@ -5,7 +5,7 @@
   "type": "commonjs",
   "description": "Mesin blast produksi berfokus Node.js/TypeScript dengan dashboard Next.js, persistensi SQLite, dan adaptor platform untuk WhatsApp, Telegram, Instagram, Twitter/X, Threads, dan Facebook Pages.",
   "engines": {
-    "node": ">=20.20.0 <21"
+    "node": ">=20.20.0 <24"
   },
   "scripts": {
     "db:init": "ts-node ./scripts/db-init.ts",

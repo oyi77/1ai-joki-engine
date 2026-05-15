@@ -63,12 +63,12 @@ export default function OverviewPage() {
 
   if (isLoading) return <LoadingSkeleton count={5} />
 
-  const activeCampaigns = campaigns?.filter((c: Campaign) => c.status === 'active')?.length ?? 0
-  const runningJobs = jobs?.filter((j: Job) => j.status === 'running')?.length ?? 0
+  const totalCampaigns = campaigns?.length ?? 0
+  const runningJobs = jobs?.filter((j: Job) => j.status === 'running' || j.status === 'pending')?.length ?? 0
   const completedToday = jobs?.filter((j: Job) => {
     const d = new Date(j.created_at ?? '')
     const today = new Date()
-    return d.toDateString() === today.toDateString() && j.status === 'completed'
+    return d.toDateString() === today.toDateString() && (j.status === 'completed' || j.status === 'submitted')
   })?.length ?? 0
   const failedJobs = jobs?.filter((j: Job) => j.status === 'failed')?.length ?? 0
 
@@ -78,20 +78,20 @@ export default function OverviewPage() {
 
   const stats = [
     { 
-      label: 'Active Campaigns', 
-      value: activeCampaigns, 
+      label: 'Total Campaigns', 
+      value: totalCampaigns, 
       icon: Zap, 
       color: 'text-emerald-400', 
       bg: 'bg-emerald-500/10',
-      description: 'Live automation flows'
+      description: 'All time campaigns'
     },
     { 
-      label: 'Running Jobs', 
+      label: 'Pending Jobs', 
       value: runningJobs, 
       icon: Activity, 
       color: 'text-blue-400', 
       bg: 'bg-blue-500/10',
-      description: 'Active processes'
+      description: 'Queued processes'
     },
     { 
       label: 'Completed Today', 

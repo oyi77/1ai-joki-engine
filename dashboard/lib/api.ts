@@ -1,11 +1,33 @@
 import axios, { AxiosError } from 'axios'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE || 'http://127.0.0.1:3456'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'
 
 export const api = axios.create({
   baseURL: API_BASE,
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
+})
+
+let cachedToken: string | null = null
+
+api.interceptors.request.use(async (config) => {
+  if (typeof window !== 'undefined') {
+    if (!cachedToken) {
+      try {
+        const res = await fetch('/api/auth/token')
+        const data = await res.json()
+        if (data.token) {
+          cachedToken = data.token
+        }
+      } catch (e) {
+        console.error('Failed to fetch auth token', e)
+      }
+    }
+    if (cachedToken) {
+      config.headers.Authorization = `Bearer ${cachedToken}`
+    }
+  }
+  return config
 })
 
 export function getApiUrl(): string {

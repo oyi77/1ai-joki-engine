@@ -29,6 +29,42 @@ export type QueueLike = Pick<JobQueue, 'enqueuePostJob' | 'enqueueCommentJob' | 
 export function createJobsRouter(queue: QueueLike) {
   const router = Router()
 
+  /**
+   * GET /v1/jobs
+   * Lists all jobs (most recent first, up to 200).
+   */
+  router.get('/', (req, res) => {
+    const repo = getJobsRepo()
+    const limit = Math.min(Number(req.query.limit ?? 200), 500)
+    const jobs = repo.listAll(limit)
+    res.json(jobs)
+  })
+
+  /**
+   * GET /v1/jobs/:id
+   */
+  router.get('/:id', (req, res) => {
+    const repo = getJobsRepo()
+    const job = repo.findById(req.params.id)
+    if (!job) return res.status(404).json({ error: 'Job not found' })
+    res.json(job)
+  })
+
+  /**
+   * PATCH /v1/jobs/:id/status
+   * Body: { status: 'completed' | 'failed' }
+   */
+  router.patch('/:id/status', (req, res) => {
+    const repo = getJobsRepo()
+    const { status } = req.body ?? {}
+    const job = repo.findById(req.params.id)
+    if (!job) return res.status(404).json({ error: 'Job not found' })
+    if (status === 'completed') repo.markCompleted(req.params.id)
+    else if (status === 'failed') repo.markFailed(req.params.id, 'manual')
+    else return res.status(400).json({ error: 'status must be completed or failed' })
+    res.json({ id: req.params.id, status })
+  })
+
   router.post('/schedule', (req, res) => {
     const { cron, template_id, account_id, to, platform } = req.body || {}
     if (!cron || !template_id || !account_id) {

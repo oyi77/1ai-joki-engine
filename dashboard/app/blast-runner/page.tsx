@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { api } from '@/lib/api'
 import { 
   Send, 
   ChevronRight, 
@@ -25,6 +26,7 @@ export default function BlastRunnerPage() {
   const [step, setStep] = useState(1)
   const [platform, setPlatform] = useState<PlatformName>('facebook')
   const [credential, setCredential] = useState('')
+  const [message, setMessage] = useState('Test blast from Joki Engine')
   const [targetSource, setTargetSource] = useState('feed')
   const [maxActions, setMaxActions] = useState(30)
   const [actionMixComment, setActionMixComment] = useState(70)
@@ -38,30 +40,23 @@ export default function BlastRunnerPage() {
     setIsLoading(true)
 
     try {
+      const accRes = await api.post('/v1/accounts', {
+        platform,
+        username: `Blast-${Date.now()}`,
+        email: 'blast@temp.local',
+        credentials: credential,
+      })
+      const accountId = accRes.data.id
+
       const payload = {
         platform,
-        credential,
-        targetSource: isWhatsApp ? 'use target file' : targetSource,
+        accountId,
+        message,
         maxActions,
-        actionMix: {
-          comment: actionMixComment,
-          chat: 100 - actionMixComment,
-        },
-        delayMinSec,
-        delayMaxSec,
+        searchQuery: isWhatsApp ? 'use target file' : targetSource,
       }
 
-      const response = await fetch('/api/blast/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-
-      const data = await response.json().catch(() => null)
-
-      if (!response.ok) {
-        throw new Error(data?.error ?? `Failed to start blast (${response.status})`)
-      }
+      const response = await api.post('/v1/blast/run', payload)
 
       toast.success('Blast initiated successfully', {
         description: `Your ${platform} blast has been queued.`,
@@ -203,6 +198,16 @@ export default function BlastRunnerPage() {
                       <span>Balanced</span>
                       <span>Pure Comment</span>
                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-300">Blast Message</label>
+                    <textarea
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 min-h-[100px]"
+                      placeholder="Enter the message to be blasted..."
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                    />
                   </div>
                 </div>
               )}

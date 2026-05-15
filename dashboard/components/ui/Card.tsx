@@ -45,6 +45,10 @@ export function CardTitle({ className = '', children, ...props }: { className?: 
   return <h3 className={`font-semibold leading-none tracking-tight text-lg ${className}`} {...props}>{children}</h3>
 }
 
+export function CardDescription({ className = '', children, ...props }: { className?: string; children?: ReactNode }) {
+  return <p className={`text-sm text-slate-500 ${className}`} {...props}>{children}</p>
+}
+
 export function CardContent({ className = '', children, ...props }: { className?: string; children?: ReactNode }) {
   return <div className={`p-6 pt-0 ${className}`} {...props}>{children}</div>
 }

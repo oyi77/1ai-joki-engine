@@ -139,6 +139,14 @@ export async function initializeJobWorker(queue: JobQueue, options?: WorkerOptio
              throw error
            }
            console.log(`[worker] ${platform} adapter succeeded for job ${id}`)
+           // Update DB status to completed
+           try {
+             const { getDb } = await import('../db/sqlite')
+             const db = getDb()
+             db.prepare(`UPDATE jobs SET status = 'completed' WHERE id = ?`).run(id)
+           } catch (err) {
+             console.error('Failed to update job status to completed', err)
+           }
            return
          } catch (err: unknown) {
            // On unexpected error, persist stack and message then rethrow for retry logic
