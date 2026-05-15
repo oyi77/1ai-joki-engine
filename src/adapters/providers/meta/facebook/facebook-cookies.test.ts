@@ -65,7 +65,7 @@ describe('FacebookAdapter (GraphQL)', () => {
     await adapter.sendMessage('unused', 'Hello GraphQL!')
     expect(postMock).toHaveBeenCalledWith(
       '/api/graphql/',
-      expect.stringContaining('doc_id=6155595407483853')
+      expect.stringContaining('doc_id=4949364150742317')
     )
   })
 
@@ -74,7 +74,7 @@ describe('FacebookAdapter (GraphQL)', () => {
     const adapter = makeAdapter()
     const res = await adapter.sendMessage('unused', 'test')
     expect(res.success).toBe(false)
-    expect(res.code).toBe('FB_DTSG_MISSING')
+    expect(res.code).toBe('FB_SEND_ERROR')
   })
 
   test('getRateLimitStatus returns correct shape', async () => {

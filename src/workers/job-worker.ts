@@ -160,6 +160,26 @@ export async function initializeJobWorker(queue: JobQueue, options?: WorkerOptio
         } else {
            throw new Error('Adapter missing reactToPost')
         }
+      } else if (type === 'ReplyJob' || type === 'reply') {
+        const chatId = jobData.chatId as string
+        const messageId = jobData.messageId as string
+        const text = jobData.message as string
+        if (!chatId || !messageId) throw new Error('ReplyJob missing chatId or messageId')
+
+        if ('replyToMessage' in adapter && typeof adapter.replyToMessage === 'function') {
+          const result = await adapter.replyToMessage(chatId, messageId, text)
+          success = result.success
+          error = result.error
+          code = result.code
+        } else if ('sendMessage' in adapter && typeof adapter.sendMessage === 'function') {
+          // Fallback to regular send message if reply is not supported
+          const result = await adapter.sendMessage(chatId, text)
+          success = result.success
+          error = result.error
+          code = result.code
+        } else {
+          throw new Error('Adapter missing replyToMessage/sendMessage')
+        }
       } else {
         throw new Error(`Unknown job type: ${type}`)
       }

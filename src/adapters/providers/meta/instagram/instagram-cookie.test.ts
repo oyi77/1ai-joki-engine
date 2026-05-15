@@ -26,13 +26,13 @@ describe('InstagramCookieAdapter', () => {
     await expect(adapter.connect()).rejects.toThrow('Instagram cookie not provided');
   });
 
-  test('sendMessage calls internal configure endpoint and returns success', async () => {
+  test('sendMessage calls internal broadcast text endpoint and returns success', async () => {
     const mockPost = vi.fn().mockResolvedValue({ status: 200, data: { status: 'ok' } });
     vi.mocked(createHttpClient).mockReturnValue({ post: mockPost, get: vi.fn() } as any);
     const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     const res = await adapter.sendMessage('unused', 'Hello IG!');
     expect(res.success).toBe(true);
-    expect(mockPost).toHaveBeenCalledWith('/api/v1/media/configure/', expect.any(String));
+    expect(mockPost).toHaveBeenCalledWith('/api/v1/direct_v2/threads/broadcast/text/', expect.any(String));
   });
 
   test('sendMessage returns failure on HTTP error', async () => {
@@ -43,7 +43,7 @@ describe('InstagramCookieAdapter', () => {
     const adapter = new InstagramCookieAdapter('sessionid=abc; csrftoken=tok');
     const res = await adapter.sendMessage('unused', 'fail');
     expect(res.success).toBe(false);
-    expect(res.code).toBe('IG_COOKIE_POST_ERROR');
+    expect(res.code).toBe('IG_COOKIE_DM_ERROR');
   });
 
   test('replyToMessage calls comment endpoint', async () => {
