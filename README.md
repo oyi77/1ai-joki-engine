@@ -40,4 +40,19 @@ To launch the project, use the following commands:
 
 ---
 
+## Product Walkthrough
+
+See the Joki Blast Engine in action. Below is a live recording of the Facebook automation engine identifying targets and preparing to blast, along with screenshots of the management dashboard.
+
+### 🎥 Live Facebook Blast
+![Facebook Blast Walkthrough](docs/assets/facebook_blast_walkthrough.webp)
+
+### 📊 Dashboard Overview
+![Dashboard Overview](docs/assets/dashboard_overview.png)
+
+### 📋 Job Tracking & History
+![Dashboard Jobs](docs/assets/dashboard_jobs.png)
+
+---
+
 For more details, visit the corresponding sections in the `docs/` folder.
