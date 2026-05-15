@@ -49,4 +49,11 @@ export class LinkClicksRepo {
       )
       .all(campaignId, limit) as LinkClickRow[]
   }
+
+  listAll(limit = 1000): LinkClickRow[] {
+    const db = this.getDatabase()
+    return db
+      .prepare(`SELECT * FROM link_clicks ORDER BY clicked_at DESC LIMIT ?`)
+      .all(limit) as LinkClickRow[]
+  }
 }

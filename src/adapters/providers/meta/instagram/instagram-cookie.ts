@@ -57,7 +57,7 @@ export class InstagramCookieAdapter implements IAdapter {
   }
 
   async sendMessage(
-    _to: string,
+    to: string,
     message: string
   ): Promise<{ success: boolean; error?: string; code?: string }> {
     if (!message.trim()) return { success: false, error: 'Message not provided', code: 'INVALID_INPUT' }
@@ -72,22 +72,26 @@ export class InstagramCookieAdapter implements IAdapter {
         timeout: 15_000,
         headers: this.webHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
       })
+      
+      // Instagram DM endpoint for text broadcast
       const params = new URLSearchParams({
-        caption: message,
-        media_type: '1',
-        upload_id: String(Date.now()),
+        text: message,
+        recipient_users: `[[${to}]]`, // Double brackets required for list of IDs
+        action: 'send_item',
+        client_context: Math.random().toString().slice(2, 20),
       })
-      const res = await client.post('/api/v1/media/configure/', params.toString())
+      
+      const res = await client.post('/api/v1/direct_v2/threads/broadcast/text/', params.toString())
       const blocked = this.checkBlocked({ status: res?.status ?? 0, data: res?.data })
       if (blocked) return { success: false, error: blocked, code: 'IG_BLOCKED' }
       const ok = res?.data?.status === 'ok'
-      this.log(`Post result: ${res?.data?.status}`)
-      return { success: ok, error: ok ? undefined : res?.data?.message, code: ok ? undefined : 'IG_COOKIE_POST_ERROR' }
+      this.log(`DM result: ${res?.data?.status}`)
+      return { success: ok, error: ok ? undefined : res?.data?.message, code: ok ? undefined : 'IG_COOKIE_DM_ERROR' }
     } catch (e: unknown) {
       return {
         success: false,
-        error: e instanceof Error ? e.message : 'IG cookie post error',
-        code: 'IG_COOKIE_POST_ERROR',
+        error: e instanceof Error ? e.message : 'IG cookie DM error',
+        code: 'IG_COOKIE_DM_ERROR',
       }
     }
   }

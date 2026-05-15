@@ -102,3 +102,64 @@ export async function getNotifications(
     }
     return notifications
 }
+
+/**
+ * Mark a specific notification as read.
+ */
+export async function markNotificationAsRead(
+  notificationId: string,
+  cookie: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!cookie) throw new Error('No cookie provided')
+
+  const cookieHeader = parseCookies(cookie)
+  const commonHeaders = {
+    'Cookie': cookieHeader,
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Origin': 'https://www.facebook.com',
+    'X-FB-Friendly-Name': 'CometNotificationsMarkReadMutation'
+  }
+
+  // 1. Get tokens
+  const pageClient = createHttpClient({ baseURL: 'https://www.facebook.com', headers: commonHeaders })
+  const pageRes = await pageClient.get('/')
+  const html = String(pageRes?.data || '')
+  
+  let fbDtsg = '';
+  const dtsgMatch = html.match(/"DTSGInitialData",\[\],\{"token":"([^"]+)"\}/) || html.match(/"name":"fb_dtsg","value":"([^"]+)"/);
+  if (dtsgMatch) fbDtsg = dtsgMatch[1];
+
+  let lsd = '';
+  const lsdMatch = html.match(/"LSD",\[\],\{"token":"([^"]+)"\}/);
+  if (lsdMatch) lsd = lsdMatch[1];
+
+  if (!fbDtsg) throw new Error('Could not extract fb_dtsg')
+
+  // 2. Mutation
+  const gqlClient = createHttpClient({
+    baseURL: 'https://www.facebook.com',
+    headers: { ...commonHeaders, 'Content-Type': 'application/x-www-form-urlencoded' }
+  })
+
+  const variables = JSON.stringify({
+    input: {
+      notification_id: notificationId,
+      actor_id: cookie.match(/c_user=(\d+)/)?.[1] || '',
+      client_mutation_id: "1"
+    }
+  })
+
+  const params = new URLSearchParams()
+  params.append('fb_dtsg', fbDtsg)
+  params.append('lsd', lsd)
+  params.append('variables', variables)
+  params.append('doc_id', '1746243808796853')
+
+  const res = await gqlClient.post('/api/graphql/', params)
+  
+  if (res.data?.errors) {
+    return { success: false, error: res.data.errors[0]?.message || 'GraphQL Error' }
+  }
+
+  return { success: true }
+}

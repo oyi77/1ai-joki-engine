@@ -6,7 +6,7 @@
 
 export type BlastPlatform = 'facebook' | 'instagram' | 'twitter' | 'threads' | 'whatsapp' | 'telegram'
 
-export type BlastAction = 'comment' | 'chat'
+export type BlastAction = 'comment' | 'chat' | 'like' | 'post'
 
 /** A single target to act on during a blast run. */
 export interface BlastTarget {

@@ -52,6 +52,7 @@ import { findThreadsTargets } from './finders/threads-finder'
 
 import { AccountsRepo } from '../repos/accountsRepo'
 import { decrypt } from '../utils/crypto'
+import { FacebookAdapter } from '../adapters/providers/meta/facebook/facebook'
 
 /** Global lock — only one blast can run at a time */
 let isRunning = false
@@ -86,12 +87,19 @@ async function executeAction(
   cookie: string
 ): Promise<{ success: boolean; error?: string }> {
   switch (platform) {
-    case 'facebook':
+    case 'facebook': {
+      const adapter = new FacebookAdapter(cookie)
       if (action === 'comment') {
         return facebookPostComment(targetId, message, cookie)
-      } else {
+      } else if (action === 'chat') {
         return facebookSendDM(targetId, message, cookie)
+      } else if (action === 'like') {
+        return adapter.reactToPost(targetId, 'LIKE')
+      } else if (action === 'post') {
+        return adapter.createPost(message)
       }
+      return { success: false, error: `Action ${action} not supported for Facebook` }
+    }
 
     case 'instagram':
       if (action === 'comment') {

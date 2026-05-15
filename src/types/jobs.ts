@@ -37,4 +37,17 @@ export interface ChatJob {
   account_id?: string
 }
 
-export type Job = PostJob | ReplyJob | CommentJob | ChatJob
+export interface LikeJob {
+  id?: string
+  type: 'LikeJob' | 'like'
+  platform: string
+  targetId: string
+  account_id?: string
+}
+
+export type Job = 
+  | (PostJob & { type: 'PostJob' }) 
+  | (ReplyJob & { type: 'ReplyJob' }) 
+  | (CommentJob & { type: 'CommentJob' | 'comment' }) 
+  | (ChatJob & { type: 'ChatJob' | 'chat' })
+  | LikeJob

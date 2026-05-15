@@ -157,19 +157,40 @@ export class FacebookPlaywrightAdapter implements IAdapter {
     async checkUnreadDMsAndReply(replyMsg: string): Promise<number> {
         if (!this._page) throw new Error('Browser not connected');
         try {
+            const { LeadsRepo } = await import('../../../../repos/leadsRepo');
+            const leadsRepo = new LeadsRepo();
+
             await this._page.goto('https://www.facebook.com/messages/t/', { waitUntil: 'domcontentloaded' });
             const unreadThreads = await this._page.$$('div[aria-label*="Unread"]');
 
             let replyCount = 0;
             for (const thread of unreadThreads) {
+                // Try to extract userId from the thread element or URL
+                const threadId = await thread.getAttribute('data-testid') || '';
+                
                 await thread.click();
                 await this._page.waitForTimeout(2000);
+
+                const currentUrl = this._page.url();
+                const userIdMatch = currentUrl.match(/\/t\/(\d+)/);
+                const userId = userIdMatch ? userIdMatch[1] : threadId;
 
                 const textBox = await this._page.waitForSelector('div[role="textbox"][contenteditable="true"]');
                 if (textBox) {
                     await textBox.fill(replyMsg);
                     await textBox.press('Enter');
                     replyCount++;
+
+                    // Record as lead
+                    if (userId) {
+                        try {
+                            leadsRepo.findOrCreate('facebook', userId);
+                            this.log(`Recorded lead for user ${userId}`);
+                        } catch (leadErr) {
+                            this.log(`Failed to record lead: ${leadErr}`);
+                        }
+                    }
+
                     await this._page.waitForTimeout(1000);
                 }
             }

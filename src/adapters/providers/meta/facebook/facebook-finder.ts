@@ -8,6 +8,12 @@
 import { createHttpClient, parseCookies } from '../../../../utils/http-client'
 import { getRandomTargets } from '../../../../utils/randomTargets'
 
+export interface FacebookSearchFilters {
+  creationTime?: 'today' | 'this_week' | 'this_month' | 'this_year'
+  author?: 'friends' | 'groups' | 'public'
+  group?: string
+}
+
 export interface FacebookFinderResult {
   postIds: string[]
   userIds: string[]
@@ -20,11 +26,13 @@ export interface FacebookFinderResult {
  * @param query   Kata kunci pencarian
  * @param cookie  Raw browser session cookie string
  * @param limit   Max target yang di-return (default 30)
+ * @param filters Advanced search filters
  */
 export async function findFacebookTargets(
   query: string,
   cookie: string,
-  limit: number = 30
+  limit: number = 30,
+  filters?: FacebookSearchFilters
 ): Promise<FacebookFinderResult> {
   if (!cookie) {
     return fallbackToFile(limit)
@@ -33,7 +41,17 @@ export async function findFacebookTargets(
   const cookieHeader = parseCookies(cookie)
 
   try {
-    // Gunakan page scraping biasa untuk menghindari error GraphQL doc_id missing variables
+    // Try GraphQL search first for better filtering support
+    try {
+      const gqlResult = await findFacebookTargetsGraphQL(query, cookie, limit, filters)
+      if (gqlResult.postIds.length > 0 || gqlResult.userIds.length > 0) {
+        return gqlResult
+      }
+    } catch (e) {
+      console.warn('[FacebookFinder] GraphQL search failed, falling back to HTML scraper:', e instanceof Error ? e.message : String(e))
+    }
+
+    // Fallback to HTML scraper
     const searchClient = createHttpClient({
       baseURL: 'https://www.facebook.com',
       timeout: 20_000,
@@ -41,12 +59,6 @@ export async function findFacebookTargets(
         Cookie: cookieHeader,
         'User-Agent':
           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'same-origin',
-        'Upgrade-Insecure-Requests': '1',
       },
     })
 
@@ -77,7 +89,6 @@ export async function findFacebookTargets(
     }
 
     if (postIds.length === 0 && userIds.length === 0) {
-      console.warn('[FacebookFinder] Tidak ada target dari search, fallback ke targets.txt')
       return fallbackToFile(limit)
     }
 
@@ -90,6 +101,87 @@ export async function findFacebookTargets(
      console.error('[FacebookFinder] Search error:', error.message)
      return fallbackToFile(limit)
    }
+}
+
+/**
+ * Advanced search using Facebook GraphQL endpoint.
+ */
+async function findFacebookTargetsGraphQL(
+  query: string,
+  cookie: string,
+  limit: number = 30,
+  filters?: FacebookSearchFilters
+): Promise<FacebookFinderResult> {
+  const cookieHeader = parseCookies(cookie)
+  
+  // 1. Get tokens
+  const pageClient = createHttpClient({
+    baseURL: 'https://www.facebook.com',
+    headers: { Cookie: cookieHeader }
+  })
+  const pageRes = await pageClient.get('/')
+  const html = String(pageRes?.data || '')
+  
+  let fbDtsg = '';
+  const dtsgMatch = html.match(/"DTSGInitialData",\[\],\{"token":"([^"]+)"\}/) || html.match(/"name":"fb_dtsg","value":"([^"]+)"/);
+  if (dtsgMatch) fbDtsg = dtsgMatch[1];
+  
+  if (!fbDtsg) throw new Error('Could not extract fb_dtsg')
+
+  // 2. Search Mutation
+  const gqlClient = createHttpClient({
+    baseURL: 'https://www.facebook.com',
+    headers: {
+      'Cookie': cookieHeader,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+
+  const variables = JSON.stringify({
+    count: limit,
+    cursor: null,
+    params: {
+      bqf: "[]",
+      browse_sesid: `ses_${Date.now()}`,
+      query: query,
+      search_surface: "POSTS_SURFACE",
+      filters: buildFilters(filters)
+    },
+    scale: 1
+  })
+
+  const params = new URLSearchParams()
+  params.append('fb_dtsg', fbDtsg)
+  params.append('variables', variables)
+  params.append('doc_id', '6012268648876713')
+
+  const res = await gqlClient.post('/api/graphql/', params)
+  const edges = res.data?.data?.search?.search_results?.edges || []
+  
+  const postIds: string[] = []
+  const userIds: string[] = []
+
+  for (const edge of edges) {
+    const node = edge.node
+    if (node?.__typename === 'Story') {
+      postIds.push(node.legacy_story_id)
+      if (node.author?.id) userIds.push(node.author.id)
+    }
+  }
+
+  return { postIds, userIds }
+}
+
+function buildFilters(filters?: FacebookSearchFilters): string[] {
+  if (!filters) return []
+  const result: string[] = []
+  if (filters.creationTime) {
+    result.push(JSON.stringify({ name: "creation_time", args: filters.creationTime }))
+  }
+  if (filters.author) {
+    result.push(JSON.stringify({ name: "author", args: filters.author }))
+  }
+  return result
 }
 
 /**

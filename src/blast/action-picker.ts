@@ -15,8 +15,14 @@ const COMMENT_PROBABILITY = 0.7
 
 /**
  * Pick a random action type based on configured probabilities.
- * Returns 'comment' ~70% of the time, 'chat' ~30%.
+ * Returns:
+ *   60% comment
+ *   20% chat (DM)
+ *   20% like
  */
 export function pickAction(): BlastAction {
-  return Math.random() < COMMENT_PROBABILITY ? 'comment' : 'chat'
+  const r = Math.random()
+  if (r < 0.6) return 'comment'
+  if (r < 0.8) return 'chat'
+  return 'like'
 }

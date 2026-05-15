@@ -39,14 +39,28 @@ router.get('/stats', (req, res) => {
     const allLeads = leadsRepo.list(1000)
     const totalLeads = allLeads.length
 
+    const clicksRepo = getLinkClicksRepo()
+    const allClicks = clicksRepo.listAll(1000)
+    const totalClicks = allClicks.length
+
     // Clicks by day (last 7 days)
-    const clicksByDay: { date: string; clicks: number }[] = []
+    const clicksByDayMap: Record<string, number> = {}
     for (let i = 6; i >= 0; i--) {
       const d = new Date()
       d.setDate(d.getDate() - i)
       const dateStr = d.toISOString().slice(0, 10)
-      clicksByDay.push({ date: dateStr, clicks: 0 })
+      clicksByDayMap[dateStr] = 0
     }
+    for (const click of allClicks) {
+      const dateStr = click.clicked_at.slice(0, 10)
+      if (clicksByDayMap[dateStr] !== undefined) {
+        clicksByDayMap[dateStr]++
+      }
+    }
+    const clicksByDay = Object.entries(clicksByDayMap).map(([date, clicks]) => ({ date, clicks }))
+
+    // CTR: (Clicks / Blasted) * 100
+    const ctr = totalJobs > 0 ? Math.round((totalClicks / totalJobs) * 100) : 0
 
     // Platform breakdown from jobs
     const platformMap: Record<string, { success: number; failed: number }> = {}
@@ -59,11 +73,11 @@ router.get('/stats', (req, res) => {
     const byPlatform = Object.entries(platformMap).map(([platform, counts]) => ({ platform, ...counts }))
 
     res.json({
-      ctr: 0,
+      ctr: ctr,
       success_rate: successRate,
       leads: totalLeads,
-      clicks: 0,
-      conversions: successJobs,
+      clicks: totalClicks,
+      conversions: totalLeads, // Leads are our primary conversions
       clicks_by_day: clicksByDay,
       by_platform: byPlatform,
       lead_sources: allLeads.reduce((acc: {source: string; count: number}[], lead) => {
@@ -75,8 +89,8 @@ router.get('/stats', (req, res) => {
       funnel: [
         { stage: 'Blasted', count: totalJobs },
         { stage: 'Delivered', count: successJobs },
+        { stage: 'Clicked', count: totalClicks },
         { stage: 'Leads', count: totalLeads },
-        { stage: 'Converted', count: successJobs },
       ],
     })
   } catch (e: any) {

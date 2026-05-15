@@ -11,10 +11,18 @@
  * - comment: 20_000 – 40_000 ms
  * - chat:    35_000 – 60_000 ms
  */
-export function getDelay(action: 'comment' | 'chat'): number {
+export function getDelay(action: 'comment' | 'chat' | 'like' | 'post'): number {
   if (action === 'chat') {
     // 35–60 seconds
     return 35_000 + Math.floor(Math.random() * 25_001)
+  }
+  if (action === 'like') {
+    // 10–20 seconds (faster)
+    return 10_000 + Math.floor(Math.random() * 10_001)
+  }
+  if (action === 'post') {
+    // 30–50 seconds
+    return 30_000 + Math.floor(Math.random() * 20_001)
   }
   // comment: 20–40 seconds
   return 20_000 + Math.floor(Math.random() * 20_001)
