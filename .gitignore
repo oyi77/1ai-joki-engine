@@ -19,3 +19,4 @@ dashboard/node_modules/
 *.bak*
 .sisyphus/run-continuation/
 .sisyphus/ralph-loop.local*
+data/*.sqlite
