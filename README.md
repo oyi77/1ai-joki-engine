@@ -42,16 +42,24 @@ To launch the project, use the following commands:
 
 ## Product Walkthrough
 
-See the Joki Blast Engine in action. Below is a live recording of the Facebook automation engine identifying targets and preparing to blast, along with screenshots of the management dashboard.
+The Joki Blast Engine is a production-ready social media automation suite. Below is the updated feature set for our Facebook implementation:
+
+*   **Unified Multi-Mode Adapter**: Supports both high-speed HTTP (GraphQL) and high-robustness BROWSER (Playwright).
+*   **Advanced Target Discovery**: Search by date, author, and group relevance with automated lead extraction.
+*   **Deep Engagement**: Automated comments, private messages, post reactions (Like/Love/etc.), and status updates.
+*   **Real-time Observability**: Comprehensive job tracking with detailed error traces and a live analytics dashboard.
 
 ### 🎥 Live Facebook Blast
 ![Facebook Blast Walkthrough](docs/assets/facebook_blast_walkthrough.webp)
+*Visualizing automated target identification and multi-action engagement.*
 
-### 📊 Dashboard Overview
+### 📊 Real-time Analytics Dashboard
 ![Dashboard Overview](docs/assets/dashboard_overview.png)
+*Track CTR, success rates, and lead conversion funnels across all platforms.*
 
-### 📋 Job Tracking & History
+### 📋 Detailed Execution Logging
 ![Dashboard Jobs](docs/assets/dashboard_jobs.png)
+*Monitor every automated action with full error persistence and trace visibility.*
 
 ---
 
