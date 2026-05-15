@@ -33,8 +33,8 @@ Write-Host "=======================================================" -Foreground
 
 # 6. Jalankan API Server di window baru
 Write-Host "Membuka terminal baru untuk API..." -ForegroundColor Cyan
-Start-Process -NoNewWindow -FilePath "npm" -ArgumentList "run dev:api"
+Start-Process -NoNewWindow -FilePath "npm" -ArgumentList "run", "dev:api"
 
 # 7. Jalankan Dashboard di window baru
 Write-Host "Membuka terminal baru untuk Dashboard..." -ForegroundColor Cyan
-Start-Process -NoNewWindow -FilePath "npm" -ArgumentList "run dev", "--prefix", "dashboard"
+Start-Process -NoNewWindow -FilePath "npm" -ArgumentList "run", "dev", "--prefix", "dashboard"

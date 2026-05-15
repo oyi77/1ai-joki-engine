@@ -68,7 +68,7 @@ function SidebarContent({ onClose, collapsed }: { onClose?: () => void, collapse
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-col h-full bg-slate-950">
+    <div className="flex flex-col h-full bg-[#0a0f18]/95 backdrop-blur-md">
       <div className={`p-6 flex items-center gap-3 ${collapsed ? 'justify-center' : ''}`}>
         <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-br from-emerald-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
           <Send className="w-5 h-5 text-white" />
@@ -95,10 +95,10 @@ function SidebarContent({ onClose, collapsed }: { onClose?: () => void, collapse
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
-                    className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200
+                    className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-300
                       ${isActive
-                        ? 'bg-emerald-500/10 text-emerald-400 font-semibold'
-                        : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}
+                        ? 'bg-emerald-500/15 text-emerald-400 font-semibold shadow-[inset_0px_1px_0px_0px_rgba(255,255,255,0.05),0_0_15px_rgba(16,185,129,0.1)]'
+                        : 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-200'}
                       ${collapsed ? 'justify-center' : ''}
                     `}
                     title={collapsed ? item.label : undefined}

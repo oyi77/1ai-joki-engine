@@ -118,21 +118,22 @@ export default function OverviewPage() {
         <p className="text-slate-500 mt-1">Welcome back. Here's what's happening with your engine.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <Card key={stat.label} className="overflow-hidden group hover:border-emerald-500/30 transition-all duration-300">
-            <CardContent className="p-6">
+          <Card key={stat.label} className="overflow-hidden group hover:border-emerald-500/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300 bg-slate-900/40 backdrop-blur-sm border-white/5 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <CardContent className="p-6 relative z-10">
               <div className="flex items-center justify-between">
-                <div className={`p-2.5 rounded-xl ${stat.bg}`}>
+                <div className={`p-3 rounded-2xl ${stat.bg} ring-1 ring-white/5`}>
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
-                <ArrowUpRight className="w-4 h-4 text-slate-700 group-hover:text-slate-400 transition-colors" />
+                <ArrowUpRight className="w-5 h-5 text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
               </div>
-              <div className="mt-4">
-                <p className="text-2xl font-bold text-slate-100">{stat.value}</p>
-                <p className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">{stat.label}</p>
+              <div className="mt-5">
+                <p className="text-3xl font-black text-slate-100 tracking-tight">{stat.value}</p>
+                <p className="text-xs font-bold text-slate-400 mt-1.5 uppercase tracking-wider">{stat.label}</p>
               </div>
-              <p className="text-[10px] text-slate-600 mt-3 font-medium uppercase tracking-widest">{stat.description}</p>
+              <p className="text-[10px] text-slate-600 mt-4 font-medium uppercase tracking-widest">{stat.description}</p>
             </CardContent>
           </Card>
         ))}
@@ -156,24 +157,25 @@ export default function OverviewPage() {
           ) : (
             <div className="grid gap-3">
               {recentActivity.map((job: Job) => (
-                <div key={job.id} className="group flex items-center justify-between p-4 bg-slate-900/40 rounded-2xl border border-slate-800/50 hover:border-emerald-500/20 transition-all duration-200">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-xl bg-slate-800/50 group-hover:bg-emerald-500/10 transition-colors">
+                <div key={job.id} className="group relative flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-900/50 rounded-2xl border border-white/5 hover:border-emerald-500/30 hover:bg-slate-900/80 hover:shadow-[0_0_20px_rgba(16,185,129,0.05)] transition-all duration-300 overflow-hidden gap-4 sm:gap-0">
+                  <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-emerald-500/0 group-hover:bg-emerald-500/50 transition-all duration-300" />
+                  <div className="flex items-center gap-4 relative z-10">
+                    <div className="p-3 rounded-2xl bg-slate-800/80 group-hover:bg-emerald-500/10 ring-1 ring-white/5 transition-colors">
                       <PlatformIcon platform={job.platform ?? ''} className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-200 capitalize">{job.type?.replace('-', ' ') || 'Process'}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <Clock className="w-3 h-3 text-slate-600" />
-                        <span className="text-[10px] text-slate-500 font-medium">
+                      <p className="text-sm font-bold text-slate-200 capitalize">{job.type?.replace('-', ' ') || 'Process'}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Clock className="w-3.5 h-3.5 text-slate-500" />
+                        <span className="text-xs text-slate-400 font-medium tracking-wide">
                           {new Date(job.created_at ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 relative z-10 border-t border-slate-800/50 sm:border-0 pt-3 sm:pt-0">
                     <StatusBadge status={mapJobStatusToType(job.status)} />
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-600 hover:text-emerald-400" asChild>
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-xl" asChild>
                       <Link href={`/jobs/${job.id}`}><ArrowUpRight className="w-4 h-4" /></Link>
                     </Button>
                   </div>

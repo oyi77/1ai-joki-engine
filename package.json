@@ -9,7 +9,7 @@
   },
   "scripts": {
     "db:init": "ts-node ./scripts/db-init.ts",
-    "db:validate": "node ./scripts/db-validate.ts",
+    "db:validate": "ts-node ./scripts/db-validate.ts",
     "validate:config": "node -r dotenv/config -r ts-node/register ./scripts/validate-config.js",
     "dev:api": "node -r dotenv/config -r ts-node/register/transpile-only -e \"require('./src/api/server').startServer()\"",
     "lint": "eslint 'src/**/*.{ts,tsx}' 'scripts/**/*.{ts,tsx}' --max-warnings=0",

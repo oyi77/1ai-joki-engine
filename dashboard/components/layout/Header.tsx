@@ -14,7 +14,7 @@ const platformKeys: PlatformName[] = ['twitter', 'facebook', 'instagram', 'threa
 
 export function Header({ onMenuToggle, platformHealth, breadcrumb }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-20 h-16 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md flex items-center px-6 gap-4">
+    <header className="sticky top-0 z-20 h-16 border-b border-white/5 bg-[#0a0f18]/70 backdrop-blur-xl flex items-center px-6 gap-4 shadow-sm">
       {onMenuToggle && (
         <button
           onClick={onMenuToggle}

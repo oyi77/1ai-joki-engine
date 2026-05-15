@@ -1,104 +1,39 @@
-/* CSS Variable Palette for Dark Theme */
-:root {
-  --background: 0 0% 3%;
-  --foreground: 220 20% 98%;
-  --card: 220 13% 8%;
-  --card-foreground: 220 20% 98%;
-  --popover: 220 13% 8%;
-  --popover-foreground: 220 20% 98%;
-  --primary: 142 76% 36%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 262 47% 54%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 220 13% 16%;
-  --muted-foreground: 220 9% 75%;
-  --accent: 220 13% 20%;
-  --accent-foreground: 220 20% 98%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 220 13% 20%;
-  --input: 220 13% 20%;
-  --ring: 142 76% 36%;
-  --radius: 0.75rem;
-}
+@import "tailwindcss";
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  :root {
+    --background: 220 30% 3%;
+    --foreground: 220 20% 98%;
+    --card: 220 30% 5%;
+    --card-foreground: 220 20% 98%;
+    --popover: 220 30% 5%;
+    --popover-foreground: 220 20% 98%;
+    --primary: 150 80% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 50% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 20% 12%;
+    --muted-foreground: 220 15% 70%;
+    --accent: 220 25% 15%;
+    --accent-foreground: 220 20% 98%;
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 25% 14%;
+    --input: 220 25% 14%;
+    --ring: 150 80% 40%;
+    --radius: 0.75rem;
+  }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
-}
+  * {
+    box-sizing: border-box;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.shell {
-  min-height: 100vh;
-  padding: 24px;
-}
-
-.grid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.card {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.muted {
-  color: hsl(var(--muted-foreground));
-}
-
-.button {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-weight: 700;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table td,
-.table th {
-  border-bottom: 1px solid hsl(var(--border));
-  padding: 10px;
-  text-align: left;
-}
-
-.input,
-.select,
-.textarea {
-  width: 100%;
-  margin-top: 6px;
-  margin-bottom: 12px;
-  padding: 10px;
-  border: 1px solid hsl(var(--border));
-  border-radius: 10px;
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
-}
-
-.row {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    @apply antialiased selection:bg-emerald-500/30 selection:text-emerald-200;
+  }
 }

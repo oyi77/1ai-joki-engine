@@ -22,7 +22,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen bg-[#0a0f18] relative">
+        {/* Subtle grid pattern background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        
         <Sidebar 
           open={sidebarOpen} 
           onClose={() => setSidebarOpen(false)} 
