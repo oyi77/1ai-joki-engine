@@ -125,7 +125,10 @@ export interface Adapter {
 }
 
 export interface PlatformHealthStatus {
-  adapters?: Adapter[]
+  [key: string]: {
+    healthy: boolean
+    mode: string
+  }
 }
 
 export interface AnalyticsStats {

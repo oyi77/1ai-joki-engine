@@ -7,13 +7,14 @@ if (!process.env.FB_COOKIE) {
 
 (async function main(): Promise<void> {
   // Initialize the Facebook adapter
-  const adapter = new FacebookPlaywrightAdapter(process.env.FB_COOKIE, { logger: console.log });
+  const adapter = new FacebookPlaywrightAdapter(process.env.FB_COOKIE!, { logger: console.log });
 
   try {
     // Connect to Facebook
     await adapter.connect();
     console.log('Connected to Facebook.');
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
         // Search for relevant posts

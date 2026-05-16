@@ -122,7 +122,7 @@ const pageClient = createHttpClient({
   if (!targetUserId) {
     console.log('⚠️  SKIPPED — no valid user ID available')
   } else if (targetUserId === cUser) {
-    console.log(`⚠️  SKIPPED — only own c_user (${cUser}) found, can\'t DM self`)
+    console.log(`⚠️  SKIPPED — only own c_user (${cUser}) found, can't DM self`)
   } else {
     console.log(`Target user: ${targetUserId}`)
     const dmResult = await sendPrivateMessage(targetUserId, TEST_MSG_DM, COOKIE)

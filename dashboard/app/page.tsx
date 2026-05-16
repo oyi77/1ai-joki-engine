@@ -205,7 +205,7 @@ export default function OverviewPage() {
                   )
                 })}
               </div>
-              <Button variant="secondary" className="w-full text-xs" asChild>
+              <Button variant="outline" className="w-full text-xs" asChild>
                 <Link href="/settings">Check Connections</Link>
               </Button>
             </CardContent>

@@ -203,8 +203,11 @@ export async function initializeJobWorker(queue: JobQueue, options?: WorkerOptio
           `Execution failed: ${errorMsg}`,
           JSON.stringify({ stack: err.stack, platform, type: jobData.type })
         )
-      } catch (dbErr) {
-        console.error('Failed to update job status to failed', dbErr)
+      } catch (dbErr: any) {
+        console.error(`[worker] Failed to update job status or write log for job ${id}`, {
+          error: dbErr.message,
+          stack: dbErr.stack
+        })
       }
       
       throw err // Rethrow for JobQueue retry logic
