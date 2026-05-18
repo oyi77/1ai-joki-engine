@@ -232,7 +232,12 @@ export class WhatsAppAdapter implements IAdapter {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   async onMessage(_callback: (msg: any) => void): Promise<void> {
-    const callbackUrl = 'YOUR_WEBHOOK_URL';
+    const config = getConfig();
+    const callbackUrl = process.env.WAHA_WEBHOOK_URL || config.WAHA_WEBHOOK_URL || '';
+    if (!callbackUrl) {
+      this.log('No WAHA_WEBHOOK_URL configured; skipping webhook registration.');
+      return;
+    }
     const url = `${this.baseUrl}/api/sessions/${this.session}/webhook`;
 
     const res = await fetch(url, {
@@ -254,6 +259,21 @@ export class WhatsAppAdapter implements IAdapter {
 
   async disconnect(): Promise<void> {
     this.log('Disconnecting from WhatsApp...');
+    try {
+      const url = `${this.baseUrl}/api/sessions/${this.session}/stop`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'X-WAHA-API-KEY': this.apiKey },
+      });
+      if (res.ok) {
+        this.log('WAHA session stopped.');
+      } else {
+        const error = await res.text();
+        this.log(`Failed to stop WAHA session: ${error}`);
+      }
+    } catch (err) {
+      this.log(`Error stopping WAHA session: ${err}`);
+    }
   }
 
   async getRateLimitStatus(): Promise<RateLimitStatus | null> {

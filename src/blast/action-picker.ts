@@ -2,16 +2,14 @@
  * Blast Runner — action randomization.
  *
  * Probabilistic logic:
- *   70% comment
- *   30% chat (DM)
+ *   60% comment
+ *   20% chat (DM)
+ *   20% like
  *
  * Avoids fixed patterns to simulate natural user behavior.
  */
 
-import type { BlastAction } from './types'
-
-/** Threshold for comment probability (0.0 – 1.0). */
-const COMMENT_PROBABILITY = 0.7
+import type { BlastAction, BlastPlatform } from './types'
 
 /**
  * Pick a random action type based on configured probabilities.
@@ -19,10 +17,17 @@ const COMMENT_PROBABILITY = 0.7
  *   60% comment
  *   20% chat (DM)
  *   20% like
+ *
+ * When platform is 'threads', 'chat' is excluded because Threads DM
+ * is not supported — falls back to 'comment' instead.
  */
-export function pickAction(): BlastAction {
+export function pickAction(platform?: BlastPlatform): BlastAction {
   const r = Math.random()
   if (r < 0.6) return 'comment'
-  if (r < 0.8) return 'chat'
+  if (r < 0.8) {
+    // Threads DM is not supported — filter it out
+    if (platform === 'threads') return 'comment'
+    return 'chat'
+  }
   return 'like'
 }

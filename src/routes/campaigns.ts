@@ -4,6 +4,7 @@ import { JobsRepo } from '../repos/jobsRepo'
 import type { JobQueue } from '../queue/job-queue'
 import { generateTrackingToken } from '../utils/tracking'
 import { getConfig } from '../config/secrets'
+import { getDb } from '../db/sqlite'
 import type { DB } from '../db/sqlite'
 import type { PostJob } from '../types/jobs'
 
@@ -124,6 +125,39 @@ export function createCampaignsRouter(queue: Pick<JobQueue, 'enqueuePostJob'>) {
 
     repo.updateStatus(campaign.id, 'scheduled')
     res.status(202).json({ campaign_id: campaign.id, posts, errors })
+  })
+
+  /**
+   * PUT /v1/campaigns/:id
+   * Body: { name?, content?, cta_link?, platforms? }
+   */
+  router.put('/:id', (req, res) => {
+    const repo = getCampaignsRepo()
+    const existing = repo.findById(req.params.id)
+    if (!existing) return res.status(404).json({ error: 'Campaign not found' })
+
+    const { name, content, cta_link, platforms } = req.body ?? {}
+    if (platforms && (!Array.isArray(platforms) || platforms.length === 0)) {
+      return res.status(400).json({ error: 'platforms must be a non-empty array' })
+    }
+
+    const db = repo.db ?? getDb()
+    const sets: string[] = []
+    const params: unknown[] = []
+    if (name !== undefined) { sets.push('name = ?'); params.push(name) }
+    if (content !== undefined) { sets.push('content = ?'); params.push(content) }
+    if (cta_link !== undefined) { sets.push('cta_link = ?'); params.push(cta_link) }
+    if (platforms !== undefined) { sets.push('platforms = ?'); params.push(JSON.stringify(platforms)) }
+
+    if (sets.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' })
+    }
+
+    params.push(req.params.id)
+    db.prepare(`UPDATE campaigns SET ${sets.join(', ')} WHERE id = ?`).run(...params)
+
+    const updated = repo.findById(req.params.id)
+    res.json(updated)
   })
 
   /**

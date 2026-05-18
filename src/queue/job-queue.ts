@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 import { Mutex } from 'async-mutex'
-import { PostJob, ReplyJob, CommentJob, ChatJob, Job } from '../types/jobs'
+import { PostJob, ReplyJob, CommentJob, ChatJob, LikeJob, Job } from '../types/jobs'
 import type { IAdapter } from '../adapters/IAdapter'
 import { computeBackoffDelay, getRetryMaxAttemptsForError, isRetryableError } from './retry'
 import { getPolicyForPlatform } from './retry-policies'
@@ -122,6 +122,22 @@ export class JobQueue extends EventEmitter {
       `[JobQueue] Enqueue ChatJob id=${id} platform=${job.platform} userId=${(job as any).userId}`
     )
     this.inMemoryQueue.push({ id, data, type: 'ChatJob', attempts: 0 })
+    if (this.processor) {
+      this.processNext()
+    } else {
+      setTimeout(() => this.processNext(), 0)
+    }
+    return id
+  }
+
+  // Enqueue a LikeJob
+  async enqueueLikeJob(job: Omit<LikeJob, 'id' | 'type'> & { platform: string }): Promise<string> {
+    const id = `job-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    const data = { ...job, type: 'LikeJob' }
+    console.debug(
+      `[JobQueue] Enqueue LikeJob id=${id} platform=${job.platform} targetId=${(job as any).targetId}`
+    )
+    this.inMemoryQueue.push({ id, data, type: 'LikeJob', attempts: 0 })
     if (this.processor) {
       this.processNext()
     } else {

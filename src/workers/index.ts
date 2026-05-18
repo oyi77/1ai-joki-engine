@@ -1,5 +1,1 @@
-import { logger } from '../utils/logger'
-
-logger.info('Workers starting...')
-
-// Workers will be initialized here in Task 10
+// Dead stub — deleted. Worker initialization lives in job-worker.ts.

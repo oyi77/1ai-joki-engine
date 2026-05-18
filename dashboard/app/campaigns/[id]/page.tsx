@@ -36,8 +36,14 @@ export default function CampaignDetailPage() {
 
   const handleBlast = () => {
     setBlastLoading(true)
+    const accountIds: Record<string, string> = {}
+    if (campaign?.platforms) {
+      for (const p of campaign.platforms) {
+        accountIds[p] = ''
+      }
+    }
     blast(
-      { campaignId: id as string, accountIds: { twitter: '' } },
+      { campaignId: id as string, accountIds },
       {
         onSuccess: () => toast.success('Blast started'),
         onError: (e: ErrorResponse | Error) => {

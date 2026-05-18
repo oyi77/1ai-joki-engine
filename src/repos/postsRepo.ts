@@ -89,12 +89,17 @@ export class PostsRepo {
   }
 
   atomicMarkPostAndUpdateCampaign(jobId: string, status: Post['status']): void {
-    const post = this.getDatabase().prepare('SELECT * FROM posts WHERE job_ids LIKE ?').get(`%${jobId}%`) as Post | undefined
+    const post = this.getDatabase().prepare(
+      'SELECT * FROM posts WHERE job_ids IS NOT NULL AND EXISTS (SELECT 1 FROM json_each(posts.job_ids) WHERE json_each.value = ?)'
+    ).get(jobId) as Post | undefined
     if (!post) return
     this.getDatabase().prepare('UPDATE posts SET status = ?, updated_at = ? WHERE id = ?').run(status, new Date().toISOString(), post.id)
     if (post.campaign_id) {
-      const campaignsRepo = new (require('./campaignsRepo').CampaignsRepo)()
-      campaignsRepo.updateStatusIfAllDone(post.campaign_id)
+      const { CampaignsRepo } = require('./campaignsRepo')
+      const campaignsRepo = new CampaignsRepo()
+      if (!campaignsRepo.hasPendingPosts(post.campaign_id)) {
+        campaignsRepo.updateStatus(post.campaign_id, 'completed')
+      }
     }
   }
 }

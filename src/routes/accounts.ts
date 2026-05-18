@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import { encrypt, sha256Hex } from '../utils/crypto'
-import { getDb } from '../db/sqlite'
 import { AccountsRepo, Account } from '../repos/accountsRepo'
 import type { DB } from '../db/sqlite'
 
@@ -37,6 +36,23 @@ router.get('/', async (req, res) => {
 })
 
 /**
+ * @route   GET /v1/accounts/:id
+ */
+router.get('/:id', async (req, res) => {
+  const { id } = req.params
+  const repo = getAccountsRepo()
+  const account = repo.findById(id)
+  if (!account) return res.status(404).json({ error: 'Account not found' })
+  res.json({
+    id: account.id,
+    platform: account.platform,
+    username: account.display_name,
+    status: 'active',
+    created_at: account.created_at,
+  })
+})
+
+/**
  * @route   POST /v1/accounts
  */
 router.post('/', async (req, res) => {
@@ -68,20 +84,12 @@ router.put('/:id', async (req, res) => {
   const existing = repo.findById(id)
   if (!existing) return res.status(404).json({ error: 'Account not found' })
 
-  // Simple update: allow updating display_name and credentials (encrypted externally)
-  const updated = { ...existing, ...req.body, updated_at: new Date().toISOString() }
-  // For simplicity, perform delete+insert via repo API (small dataset). Better: implement update method.
-  repo.delete(id)
-  // Re-create with same id
-  const db = repo.db ?? getDb()
-  db.prepare(
-    `INSERT INTO accounts (id, platform, display_name, credentials_encrypted) VALUES (?, ?, ?, ?)`
-  ).run(
-    id,
-    updated.platform ?? existing.platform,
-    updated.display_name ?? existing.display_name,
-    updated.credentials_encrypted ?? existing.credentials_encrypted
-  )
+  const patch: Record<string, unknown> = {}
+  if (req.body.platform !== undefined) patch.platform = req.body.platform
+  if (req.body.username !== undefined) patch.display_name = req.body.username
+  if (req.body.credentials !== undefined) patch.credentials_encrypted = encrypt(req.body.credentials)
+  const ok = repo.update(id, patch)
+  if (!ok) return res.status(404).json({ error: 'Account not found' })
 
   res.json({ message: 'Account updated' })
 })

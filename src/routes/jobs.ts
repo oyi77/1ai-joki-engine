@@ -6,12 +6,14 @@ import {
   resetSchedules,
   startCronScheduler,
   updateSchedule,
+  deleteSchedule,
+  findScheduleById,
   validateCronExpression,
-  schedules,
 } from '../scheduler/cron-scheduler'
 import { JobsRepo } from '../repos/jobsRepo'
 import { AccountsRepo, Account } from '../repos/accountsRepo'
 import { getRandomTargets } from '../utils/randomTargets'
+import { getDb } from '../db/sqlite'
 import type { DB } from '../db/sqlite'
 import type { PostJob, CommentJob } from '../types/jobs'
 
@@ -24,7 +26,7 @@ export function getJobsRepo(db?: DB) {
   return jobsRepo
 }
 
-export type QueueLike = Pick<JobQueue, 'enqueuePostJob' | 'enqueueCommentJob' | 'enqueueChatJob'>
+export type QueueLike = Pick<JobQueue, 'enqueuePostJob' | 'enqueueCommentJob' | 'enqueueChatJob' | 'enqueueLikeJob'>
 
 export function createJobsRouter(queue: QueueLike) {
   const router = Router()
@@ -107,6 +109,45 @@ export function createJobsRouter(queue: QueueLike) {
    *
    * The account must be a Facebook account (platform = 'facebook' or 'facebook-page').
    */
+  /**
+   * POST /v1/jobs/:id/retry
+   * Resets a failed job back to pending and re-enqueues it.
+   */
+  router.post('/:id/retry', async (req, res) => {
+    const repo = getJobsRepo()
+    const job = repo.findById(req.params.id)
+    if (!job) return res.status(404).json({ error: 'Job not found' })
+    if (job.status !== 'failed') {
+      return res.status(400).json({ error: 'Only failed jobs can be retried' })
+    }
+    try {
+      const db = repo.db ?? getDb()
+      db.prepare(`UPDATE jobs SET status = 'pending', attempts = 0 WHERE id = ?`).run(job.id)
+      // Re-enqueue to the job queue
+      if (job.type === 'post') {
+        const payload = job.payload ? JSON.parse(job.payload) : {}
+        await queue.enqueuePostJob({
+          platform: job.platform || 'default',
+          to: payload.to || job.account_id || '',
+          message: payload.message || '',
+          account_id: job.account_id || '',
+        } as unknown as Omit<PostJob, 'id' | 'type'> & { platform: string })
+      } else if (job.type === 'comment') {
+        const payload = job.payload ? JSON.parse(job.payload) : {}
+        await queue.enqueueCommentJob({
+          platform: job.platform || 'facebook',
+          postId: payload.postId || '',
+          message: payload.message || '',
+          account_id: job.account_id || '',
+        } as unknown as Omit<CommentJob, 'id' | 'type'> & { platform: string })
+      }
+      res.json({ id: job.id, status: 'pending' })
+    } catch (e: unknown) {
+      const errorMsg = e instanceof Error ? e.message : 'Retry failed'
+      res.status(500).json({ error: errorMsg })
+    }
+  })
+
   router.post('/comment-random', async (req, res) => {
     const { message, accountId, count } = req.body || {}
 
@@ -182,6 +223,11 @@ export function createSchedulesRouter() {
   router.get('/', (_req, res) => {
     res.json(listSchedules())
   })
+  router.get('/:id', (req, res) => {
+    const schedule = findScheduleById(req.params.id)
+    if (!schedule) return res.status(404).json({ error: 'Schedule not found' })
+    res.json(schedule)
+  })
   router.put('/:id', (req, res) => {
     const updated = updateSchedule(req.params.id, req.body || {})
     if (!updated) {
@@ -189,11 +235,16 @@ export function createSchedulesRouter() {
     }
     res.json(updated)
   })
+  router.delete('/:id', (req, res) => {
+    const ok = deleteSchedule(req.params.id)
+    if (!ok) return res.status(404).json({ error: 'Schedule not found' })
+    res.json({ message: 'Schedule deleted' })
+  })
   return router
 }
 
 export const defaultJobQueue = new JobQueue()
 export const jobsRouter = createJobsRouter(defaultJobQueue)
 export const schedulesRouter = createSchedulesRouter()
-export { resetSchedules, startCronScheduler, schedules } from '../scheduler/cron-scheduler'
+export { resetSchedules, startCronScheduler, listSchedules } from '../scheduler/cron-scheduler'
 export default jobsRouter

@@ -1,5 +1,4 @@
 import express, { Router } from "express";
-import { getDb } from "../db/sqlite";
 import { TemplatesRepo, Template } from "../repos/templatesRepo";
 import type { Database } from "better-sqlite3";
 
@@ -56,6 +55,13 @@ router.get("/", (req, res) => {
   res.json(repo.list());
 });
 
+router.get("/:id", (req, res) => {
+  const repo = getTemplatesRepo();
+  const template = repo.findById(req.params.id);
+  if (!template) return res.status(404).json({ error: "Template not found" });
+  res.json(template);
+});
+
 router.post("/", (req, res) => {
   const { name, content, variables, type } = req.body;
 
@@ -100,11 +106,13 @@ router.put("/:id", (req, res) => {
   if (updated.variables && !validateVariables(updated.content, updated.variables)) {
     return res.status(400).json({ error: "One or more variables not found in content" });
   }
-  // Simple update via delete + insert for MVP
-  repo.delete(id);
-  const db = repo.db ?? getDb();
-  db.prepare(`INSERT INTO templates (id, name, content, variables, type) VALUES (?, ?, ?, ?, ?)`)
-    .run(id, updated.name, updated.content, JSON.stringify(updated.variables || []), updated.type);
+  const patch: Record<string, unknown> = {};
+  if (req.body.name !== undefined) patch.name = updated.name;
+  if (req.body.content !== undefined) patch.content = updated.content;
+  if (req.body.variables !== undefined) patch.variables = updated.variables;
+  if (req.body.type !== undefined) patch.type = updated.type;
+  const ok = repo.update(id, patch);
+  if (!ok) return res.status(404).json({ error: "Template not found" });
   res.json(updated);
 });
 

@@ -56,7 +56,7 @@ Social media automation engine for BerkahKarya — schedule posts, engagement au
 - Facebook/Instagram: cookie-based auth (no OAuth token required)
 - Each platform adapter implements `IAdapter` (`connect`, `sendMessage`, `disconnect`, `getRateLimitStatus`)
 
-## Completion Status (2026-05-11)
+## Completion Status (2026-05-18)
 
 ### Wave 1 — Foundation
 - ✅ Fixed TypeScript type errors (`@types/node`, `"lib": ["ES2020", "DOM"]` in tsconfig)
@@ -93,6 +93,16 @@ Social media automation engine for BerkahKarya — schedule posts, engagement au
 - **No TODO/FIXME markers** in production code
 - **No binary files** tracked in git
 
+## Gap Analysis (2026-05-18)
+
+**Full plan:** `.omc/plans/gap-analysis-2026-05-18.md`
+
+**Summary:** 68 gaps found across 4 severity levels:
+- **Critical (8):** Webhooks/tracking behind auth, SQL injection in sql.js paths, conflicting migrations, broken method call, hardcoded webhook URL, post-hoc rate limiting, missing dashboard endpoints
+- **High (14):** Empty posts router, in-memory schedules, placeholder template content, missing enqueueLikeJob, Telegram excluded from blast, delete+re-insert anti-pattern, missing dashboard pages, type mismatches
+- **Medium (18):** No input validation, inconsistent response format, missing CRUD operations, adapter stubs, code duplication
+- **Low (28):** Zero tests for repos/config/crypto/blast-actions, empty test stubs, broken doc links, stale docs
+
 ## Conventions
 - JSDoc on exported functions (not internal helpers)
 - `FIX #N` comments track GitHub issues in code
@@ -116,4 +126,4 @@ npm test
 ## Notes
 - The `1ai-social` repo (Python) handles scheduling/content planning; this repo is the JS execution engine.
 - `1ai-reach` (Python) is a separate reach/analytics tool.
-- Facebook Graph API v19 migration is tracked in `docs/decisions/ADR-0004`.
+- Facebook auth: cookie-based (ADR-0006 supersedes ADR-0004's Graph API approach).

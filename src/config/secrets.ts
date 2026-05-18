@@ -78,6 +78,7 @@ export type AppConfig = {
   WAHA_BASE_URL?: string;
   WAHA_API_KEY?: string;
   WAHA_SESSION?: string;
+  WAHA_WEBHOOK_URL?: string;
   // Telegram MTProto (gramjs / Telethon-style user account)
   TELEGRAM_API_ID?: string;
   TELEGRAM_API_HASH?: string;
@@ -141,6 +142,8 @@ export function getConfig(): AppConfig {
   if (wahaApiKey) result.WAHA_API_KEY = wahaApiKey;
   const wahaSession = readRuntimeSettingValue("WAHA_SESSION") || (process.env as any).WAHA_SESSION;
   if (wahaSession) result.WAHA_SESSION = wahaSession;
+  const wahaWebhookUrl = readRuntimeSettingValue("WAHA_WEBHOOK_URL") || (process.env as any).WAHA_WEBHOOK_URL;
+  if (wahaWebhookUrl) result.WAHA_WEBHOOK_URL = wahaWebhookUrl;
   // Telegram MTProto optional fields
   const tgApiId = readRuntimeSettingValue("TELEGRAM_API_ID") || (process.env as any).TELEGRAM_API_ID;
   if (tgApiId) result.TELEGRAM_API_ID = tgApiId;

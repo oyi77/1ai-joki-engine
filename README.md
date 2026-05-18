@@ -23,20 +23,23 @@ To launch the project, use the following commands:
 ## Documentation Index
 
 ### Design & Architecture
-- [Design Overview](docs/design/overview.md)
-- [System Architecture](docs/design/system-architecture.md)
+- [Architecture](docs/design/architecture.md)
+- [Data Flow](docs/design/data-flow.md)
+- [Scaling](docs/design/scaling.md)
+- [Security](docs/design/security.md)
 
 ### Guides & Planning
-- [Development Guidelines](docs/planning/dev-guidelines.md)
-- [Feature Planning](docs/planning/feature-planning.md)
+- [Development Guide](docs/planning/GUIDE.md)
+- [Glossary](docs/design/GLOSSARY.md)
 
 ### Reports
-- [Performance Reports](docs/reports/performance.md)
-- [Audit Logs](docs/reports/audit-logs.md)
+- [Implementation Summary](docs/reports/IMPLEMENTATION_SUMMARY.md)
+- [Testing Summary](docs/reports/TESTING_SUMMARY.md)
 
-### Indonesian Docs
-- [Panduan Pengguna (User Guide)](docs/id/pengguna.md)
-- [Dokumen Sistem (System Docs)](docs/id/sistem.md)
+### Decision Records
+- [ADR Index](docs/decisions/AGENTS.md)
+- [ADR-0006: Facebook Cookie Auth](docs/decisions/ADR-0006-facebook-cookie-auth.md)
+- [ADR-0007: Blast Runner Architecture](docs/decisions/ADR-0007-blast-runner-architecture.md)
 
 ---
 

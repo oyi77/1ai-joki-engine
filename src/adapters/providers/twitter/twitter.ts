@@ -80,6 +80,7 @@ export class TwitterAdapter implements IAdapter {
           code: 'TWITTER_CLIENT_NOT_INITIALIZED',
         }
       }
+      await rateLimiter.waitForToken('twitter')
       // Use v2 create tweet if available; fall back to v1.tweet
       if (typeof this.rwClient.v2?.tweet === 'function') {
         await this.rwClient.v2.tweet(message)
@@ -93,7 +94,6 @@ export class TwitterAdapter implements IAdapter {
           error: 'Twitter API surface not supported in this runtime',
         }
       }
-      await rateLimiter.waitForToken('twitter')
       return { success: true }
     } catch (e: any) {
       const error = e?.message ?? 'Twitter post error'
@@ -116,6 +116,7 @@ export class TwitterAdapter implements IAdapter {
           code: 'TWITTER_CLIENT_NOT_INITIALIZED',
         }
       }
+      await rateLimiter.waitForToken('twitter')
       // Reply to a tweet by id using v1 API when available
       if (typeof this.rwClient.v1?.reply === 'function') {
         // Twitter v1: reply(text, in_reply_to_status_id)
@@ -129,7 +130,6 @@ export class TwitterAdapter implements IAdapter {
           error: 'Twitter API surface not supported for replies',
         }
       }
-      await rateLimiter.waitForToken('twitter')
       return { success: true }
     } catch (e: any) {
       const error = e?.message ?? 'Twitter reply error'

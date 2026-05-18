@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted.
+**Superseded** by [ADR-0006: Facebook Cookie Auth](ADR-0006-facebook-cookie-auth.md). The project switched from Graph API token-based auth to cookie-based auth for Facebook.
 
 ## Context
 

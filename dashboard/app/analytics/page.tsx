@@ -11,7 +11,7 @@ import { dateRanges } from '@/lib/utils'
 import { BarChart3, TrendingUp } from 'lucide-react'
 
 export default function AnalyticsPage() {
-  const [dateRange, setDateRange] = useState('7d')
+  const [dateRange, setDateRange] = useState('last7')
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['analytics', dateRange],
@@ -34,8 +34,8 @@ export default function AnalyticsPage() {
           </SelectTrigger>
           <SelectContent className="bg-slate-800 border-slate-700">
             <SelectItem value="today">Today</SelectItem>
-            <SelectItem value="7d">Last 7 Days</SelectItem>
-            <SelectItem value="30d">Last 30 Days</SelectItem>
+            <SelectItem value="last7">Last 7 Days</SelectItem>
+            <SelectItem value="last30">Last 30 Days</SelectItem>
           </SelectContent>
         </Select>
       </div>

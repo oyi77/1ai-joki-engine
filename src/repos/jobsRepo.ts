@@ -31,7 +31,8 @@ export class JobsRepo {
       db.prepare(`INSERT INTO jobs (id, account_id, platform, type, payload, attempts, max_attempts, next_run_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
         .run(id, input.account_id || null, input.platform || null, input.type || null, payload, 0, input.max_attempts ?? 5, input.next_run_at || null, 'pending');
     } else {
-      db.exec(`INSERT INTO jobs (id, account_id, platform, type, payload, attempts, max_attempts, next_run_at, status, created_at) VALUES ('${id}', '${input.account_id || ''}', '${input.platform || ''}', '${input.type || ''}', '${payload || ''}', 0, ${input.max_attempts ?? 5}, ${input.next_run_at ? `'${input.next_run_at}'` : 'NULL'}, 'pending', datetime('now'))`);
+      db.prepare(`INSERT INTO jobs (id, account_id, platform, type, payload, attempts, max_attempts, next_run_at, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`)
+        .run(id, input.account_id || null, input.platform || null, input.type || null, payload, 0, input.max_attempts ?? 5, input.next_run_at || null, 'pending');
     }
     return { id, account_id: input.account_id ?? undefined, platform: input.platform ?? undefined, type: input.type ?? undefined, payload: payload ?? undefined, attempts: 0, max_attempts: input.max_attempts ?? 5, next_run_at: input.next_run_at ?? null, status: 'pending', created_at: new Date().toISOString() };
   }
@@ -50,7 +51,7 @@ export class JobsRepo {
   markFailed(id: string, err: unknown) {
     const db = this.db ?? getDb();
     const errorMessage = err instanceof Error ? err.message : String(err);
-    db.prepare(`UPDATE jobs SET status = 'failed' WHERE id = ?`).run(id);
+    db.prepare(`UPDATE jobs SET status = 'failed', last_error = ? WHERE id = ?`).run(errorMessage, id);
   }
 
   markCompleted(id: string) {

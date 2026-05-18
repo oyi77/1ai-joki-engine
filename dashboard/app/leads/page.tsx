@@ -38,8 +38,8 @@ export default function LeadsPage() {
 
   const columns = [
     { key: 'contact' as const, header: 'Contact' },
-    { key: 'platform' as const, header: 'Platform' },
-    { key: 'source_campaign' as const, header: 'Source Campaign' },
+    { key: 'inbound_platform' as const, header: 'Platform' },
+    { key: 'campaign_id' as const, header: 'Source Campaign' },
     {
       key: 'status' as const,
       header: 'Status',

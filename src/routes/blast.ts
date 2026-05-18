@@ -9,7 +9,7 @@ import { Router, Request, Response } from 'express'
 import { runBlast, isBlastRunning } from '../blast/blast-runner'
 import type { BlastPlatform } from '../blast/types'
 
-const VALID_PLATFORMS: BlastPlatform[] = ['facebook', 'instagram', 'twitter', 'threads', 'whatsapp']
+const VALID_PLATFORMS: BlastPlatform[] = ['facebook', 'instagram', 'twitter', 'threads', 'whatsapp', 'telegram']
 
 export function createBlastRouter() {
   const router = Router()

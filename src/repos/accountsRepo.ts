@@ -17,9 +17,13 @@ export class AccountsRepo {
     this.db = db
   }
 
+  private getDatabase(): DB {
+    return this.db ?? getDb()
+  }
+
   create(a: Omit<Account, 'id' | 'created_at'>): Account {
     const id = randomUUID()
-    const db = this.db ?? getDb()
+    const db = this.getDatabase()
     const isSqlJs = !!(db && (db as unknown as { __isSqlJs?: boolean })?.__isSqlJs)
     const stmt =
       !isSqlJs &&
@@ -39,11 +43,11 @@ export class AccountsRepo {
         throw err
       }
     } else {
-      // sql.js path (fallback) — use prepared statement if available
+      // sql.js fallback — use prepared statement to prevent SQL injection
       try {
-        db.exec(
-          `INSERT INTO accounts (id, platform, display_name, credentials_encrypted, created_at) VALUES ('${id}', '${a.platform}', '${a.display_name ?? ''}', '${String(a.credentials_encrypted).replace(/'/g, "''")}', datetime('now'))`
-        )
+        db.prepare(
+          `INSERT INTO accounts (id, platform, display_name, credentials_encrypted, created_at) VALUES (?, ?, ?, ?, datetime('now'))`
+        ).run(id, a.platform, a.display_name ?? null, String(a.credentials_encrypted))
       } catch (err) {
         console.error('[AccountsRepo] exec error', {
           id,
@@ -58,7 +62,7 @@ export class AccountsRepo {
   }
 
   findById(id: string): Account | null {
-    const db = this.db ?? getDb()
+    const db = this.getDatabase()
     const row = db
       .prepare(
         'SELECT id, platform, display_name, credentials_encrypted, created_at FROM accounts WHERE id = ? LIMIT 1'
@@ -68,7 +72,7 @@ export class AccountsRepo {
   }
 
   list(): Account[] {
-    const db = this.db ?? getDb()
+    const db = this.getDatabase()
     return db
       .prepare(
         'SELECT id, platform, display_name, credentials_encrypted, created_at FROM accounts ORDER BY created_at DESC'
@@ -76,8 +80,23 @@ export class AccountsRepo {
       .all()
   }
 
+  update(id: string, patch: Partial<Pick<Account, 'platform' | 'display_name' | 'credentials_encrypted'>>): boolean {
+    const db = this.getDatabase()
+    const existing = db.prepare('SELECT id FROM accounts WHERE id = ? LIMIT 1').get(id)
+    if (!existing) return false
+    const fields: string[] = []
+    const values: unknown[] = []
+    if (patch.platform !== undefined) { fields.push('platform = ?'); values.push(patch.platform) }
+    if (patch.display_name !== undefined) { fields.push('display_name = ?'); values.push(patch.display_name) }
+    if (patch.credentials_encrypted !== undefined) { fields.push('credentials_encrypted = ?'); values.push(patch.credentials_encrypted) }
+    if (fields.length === 0) return false
+    values.push(id)
+    const result = db.prepare(`UPDATE accounts SET ${fields.join(', ')} WHERE id = ?`).run(...values)
+    return result.changes > 0
+  }
+
   delete(id: string): boolean {
-    const db = this.db ?? getDb()
+    const db = this.getDatabase()
     const existing = db.prepare('SELECT id FROM accounts WHERE id = ? LIMIT 1').get(id)
     if (!existing) return false
     const res = db.prepare('DELETE FROM accounts WHERE id = ?').run(id)

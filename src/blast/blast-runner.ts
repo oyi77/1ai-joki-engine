@@ -288,7 +288,7 @@ export async function runBlast(
       // User-supplied targets
       targets = config.targets.map((t) => ({
         id: t,
-        action: doPickAction(),
+        action: doPickAction(config.platform),
       }))
     } else {
       // Fetch from platform finder

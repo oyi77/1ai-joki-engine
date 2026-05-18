@@ -112,6 +112,23 @@ export function createWebhooksRouter(queue: Pick<JobQueue, 'enqueuePostJob'>): R
      }
    })
 
+  /**
+   * POST /v1/webhooks/leads/:id/handoff
+   * Marks a lead as handed off (agent takes over from bot).
+   */
+   router.post('/leads/:id/handoff', (req, res) => {
+     try {
+       const repo = getLeadsRepo()
+       const lead = repo.findById(req.params.id)
+       if (!lead) return res.status(404).json({ error: 'Lead not found' })
+       repo.markHandedOff(lead.id)
+       res.json({ ok: true, lead_id: lead.id, status: 'handed_off' })
+     } catch (e: unknown) {
+       const errorMsg = e instanceof Error ? e.message : 'Internal error'
+       res.status(500).json({ error: errorMsg })
+     }
+   })
+
   return router
 }
 
